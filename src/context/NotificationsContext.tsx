@@ -31,11 +31,20 @@ const NotificationsContext = createContext<NotificationsContextValue | null>(
 );
 
 function getSocketUrl() {
+  const socketUrl = import.meta.env.VITE_SOCKET_URL as string | undefined;
+  if (socketUrl) return socketUrl;
+
   const apiUrl = import.meta.env.VITE_API_URL as string | undefined;
   if (apiUrl?.startsWith('http')) {
     return apiUrl.replace(/\/api\/?$/, '');
   }
-  return undefined;
+
+  // Direct backend URL in local dev — avoids Vite /socket.io proxy ECONNABORTED noise
+  if (import.meta.env.DEV) {
+    return 'http://localhost:3000';
+  }
+
+  return window.location.origin;
 }
 
 export function NotificationsProvider({ children }: { children: ReactNode }) {
@@ -73,10 +82,14 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!isAuthenticated || !token) return;
 
-    const socket: Socket = io(`${getSocketUrl() ?? ''}/notifications`, {
+    const socket: Socket = io(`${getSocketUrl()}/notifications`, {
       path: '/socket.io',
       auth: { token },
       transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: 8,
+      reconnectionDelay: 1500,
+      autoConnect: true,
     });
 
     socket.on('notification', (notification: AppNotification) => {
@@ -90,6 +103,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     });
 
     return () => {
+      socket.removeAllListeners();
       socket.disconnect();
     };
   }, [isAuthenticated, token]);

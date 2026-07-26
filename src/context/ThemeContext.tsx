@@ -178,9 +178,11 @@ function applyAccentPalette(
     root.style.setProperty('--light-accent', lightAccent);
     root.style.setProperty('--bg-very-light', neutralBg);
     root.style.setProperty('--page-bg', '#ffffff');
+    root.style.setProperty('--white-cards', '#ffffff');
     root.style.setProperty('--border-input', neutralBorder);
     root.style.setProperty('--sidebar-client', primaryHover);
     root.style.setProperty('--sidebar-company', primary);
+    root.style.setProperty('--sidebar-admin-bg', '#ffffff');
     root.style.setProperty('--sidebar-admin-border', neutralBorder);
     root.style.setProperty('--sidebar-admin-hover', neutralBg);
     root.style.setProperty(
@@ -189,6 +191,9 @@ function applyAccentPalette(
     );
     root.style.setProperty('--accent-icon-bg', lightAccent);
     root.style.setProperty('--accent-icon-fg', primaryHover);
+    root.style.setProperty('--text-main', '#1f2937');
+    root.style.setProperty('--text-secondary', '#6b7280');
+    root.style.setProperty('--text-disabled', '#9ca3af');
     return;
   }
 
@@ -205,14 +210,20 @@ function applyAccentPalette(
   root.style.setProperty('--primary-hover', hsl(h, hoverS, hoverL));
   root.style.setProperty('--light-accent', hsl(h, softS, softL));
   root.style.setProperty('--bg-very-light', '#16161f');
+  root.style.setProperty('--page-bg', '#0f0f14');
+  root.style.setProperty('--white-cards', '#1c1c28');
   root.style.setProperty('--border-input', '#3f3f54');
   root.style.setProperty('--sidebar-client', hsl(h, s, l));
   root.style.setProperty('--sidebar-company', hsl(h, hoverS, hoverL));
+  root.style.setProperty('--sidebar-admin-bg', '#151520');
   root.style.setProperty('--sidebar-admin-border', '#2a2a3a');
   root.style.setProperty('--sidebar-admin-hover', '#222233');
   root.style.setProperty('--soft-shadow', `0 4px 24px hsl(0 0% 0% / ${shadowA})`);
   root.style.setProperty('--accent-icon-bg', hsl(h, softS, softL));
   root.style.setProperty('--accent-icon-fg', hsl(h, hoverS, hoverL));
+  root.style.setProperty('--text-main', '#f3f4f6');
+  root.style.setProperty('--text-secondary', '#a1a1aa');
+  root.style.setProperty('--text-disabled', '#71717a');
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

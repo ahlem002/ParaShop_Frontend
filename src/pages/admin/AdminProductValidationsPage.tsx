@@ -6,6 +6,7 @@ import {
   updateProductVerification,
 } from '../../services/admin.service';
 import { resolveUploadUrl } from '../../config/api';
+import { ListToolbar } from '../../components/common/ListToolbar';
 
 type FilterTab = 'PENDING' | 'APPROVED' | 'REJECTED' | 'ALL';
 
@@ -31,6 +32,9 @@ export function AdminProductValidationsPage() {
   const [error, setError] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterTab>('PENDING');
+  const [search, setSearch] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('ALL');
+  const [companyFilter, setCompanyFilter] = useState('ALL');
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -60,10 +64,43 @@ export function AdminProductValidationsPage() {
     [products],
   );
 
+  const categories = useMemo(() => {
+    const names = new Set<string>();
+    for (const product of products) {
+      if (product.category?.name) names.add(product.category.name);
+    }
+    return Array.from(names).sort((a, b) => a.localeCompare(b));
+  }, [products]);
+
+  const companies = useMemo(() => {
+    const names = new Set<string>();
+    for (const product of products) {
+      if (product.company?.companyName) names.add(product.company.companyName);
+    }
+    return Array.from(names).sort((a, b) => a.localeCompare(b));
+  }, [products]);
+
   const filtered = useMemo(() => {
-    if (filter === 'ALL') return products;
-    return products.filter((p) => p.verificationStatus === filter);
-  }, [products, filter]);
+    const query = search.trim().toLowerCase();
+
+    return products.filter((p) => {
+      if (filter !== 'ALL' && p.verificationStatus !== filter) return false;
+      if (categoryFilter !== 'ALL' && p.category?.name !== categoryFilter) {
+        return false;
+      }
+      if (companyFilter !== 'ALL' && p.company?.companyName !== companyFilter) {
+        return false;
+      }
+      if (!query) return true;
+
+      return (
+        p.name.toLowerCase().includes(query) ||
+        p.laboratory.toLowerCase().includes(query) ||
+        (p.company?.companyName ?? '').toLowerCase().includes(query) ||
+        (p.category?.name ?? '').toLowerCase().includes(query)
+      );
+    });
+  }, [products, filter, search, categoryFilter, companyFilter]);
 
   async function handleApprove(product: AdminProduct) {
     if (
@@ -176,6 +213,35 @@ export function AdminProductValidationsPage() {
             {error}
           </div>
         )}
+
+        <ListToolbar
+          search={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Search by product, company, or category..."
+          searchAriaLabel="Search product validations"
+          selects={[
+            {
+              id: 'category',
+              label: 'Filter by category',
+              value: categoryFilter,
+              onChange: setCategoryFilter,
+              options: [
+                { value: 'ALL', label: 'All categories' },
+                ...categories.map((name) => ({ value: name, label: name })),
+              ],
+            },
+            {
+              id: 'company',
+              label: 'Filter by company',
+              value: companyFilter,
+              onChange: setCompanyFilter,
+              options: [
+                { value: 'ALL', label: 'All companies' },
+                ...companies.map((name) => ({ value: name, label: name })),
+              ],
+            },
+          ]}
+        />
 
         <div className="admin-filter-tabs">
           {tabs.map((tab) => (

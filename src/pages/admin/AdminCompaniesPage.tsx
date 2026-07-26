@@ -1,12 +1,23 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { AdminCompany } from '../../types/admin';
 import {
   getAdminCompanies,
   updateCompanyVerification,
 } from '../../services/admin.service';
+import { ListToolbar } from '../../components/common/ListToolbar';
+import { resolveUploadUrl } from '../../config/api';
 
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString();
+}
+
+function formatCompanyType(type: string | null) {
+  if (!type) return '—';
+  return type
+    .toLowerCase()
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
 
 function VerificationBadge({
@@ -26,6 +37,10 @@ export function AdminCompaniesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [typeFilter, setTypeFilter] = useState('ALL');
+  const [ownerStatusFilter, setOwnerStatusFilter] = useState('ALL');
 
   const loadCompanies = useCallback(async () => {
     setLoading(true);
@@ -42,8 +57,41 @@ export function AdminCompaniesPage() {
   }, []);
 
   useEffect(() => {
-    loadCompanies();
+    void loadCompanies();
   }, [loadCompanies]);
+
+  const filtered = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return companies.filter((company) => {
+      if (
+        statusFilter !== 'ALL' &&
+        company.verificationStatus !== statusFilter
+      ) {
+        return false;
+      }
+      if (typeFilter !== 'ALL' && company.companyType !== typeFilter) {
+        return false;
+      }
+      if (
+        ownerStatusFilter !== 'ALL' &&
+        company.owner.status !== ownerStatusFilter
+      ) {
+        return false;
+      }
+      if (!query) return true;
+
+      const ownerName =
+        `${company.owner.firstName} ${company.owner.lastName}`.toLowerCase();
+      return (
+        company.companyName.toLowerCase().includes(query) ||
+        company.email.toLowerCase().includes(query) ||
+        (company.phoneNumber ?? '').toLowerCase().includes(query) ||
+        ownerName.includes(query) ||
+        company.owner.email.toLowerCase().includes(query)
+      );
+    });
+  }, [companies, search, statusFilter, typeFilter, ownerStatusFilter]);
 
   async function handleApprove(company: AdminCompany) {
     if (!window.confirm(`Approve ${company.companyName}?`)) {
@@ -114,7 +162,11 @@ export function AdminCompaniesPage() {
         <div className="admin-error">
           {error}
           <br />
-          <button type="button" className="btn btn-primary" onClick={loadCompanies}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={loadCompanies}
+          >
             Retry
           </button>
         </div>
@@ -126,94 +178,169 @@ export function AdminCompaniesPage() {
     <div className="admin-page">
       <h1 className="admin-page-title">Company Management</h1>
       <div className="admin-page-card">
-      {error && <div className="admin-error" style={{ marginBottom: 16 }}>{error}</div>}
+        {error && (
+          <div className="admin-error" style={{ marginBottom: 16 }}>
+            {error}
+          </div>
+        )}
 
-      {companies.length === 0 ? (
-        <div className="admin-empty">No companies registered yet.</div>
-      ) : (
-        <div className="admin-table-wrap">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Company</th>
-                <th>Owner</th>
-                <th>Company Email</th>
-                <th>Phone</th>
-                <th>Address</th>
-                <th>Proof</th>
-                <th>Status</th>
-                <th>Registered</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {companies.map((company) => (
-                <tr key={company.companyId}>
-                  <td>{company.companyName}</td>
-                  <td>
-                    {company.owner.firstName} {company.owner.lastName}
-                    <br />
-                    <span style={{ color: 'var(--text-secondary)', fontSize: 13 }}>
-                      {company.owner.email}
-                    </span>
-                  </td>
-                  <td>{company.email}</td>
-                  <td>{company.phoneNumber ?? '—'}</td>
-                  <td>{company.address ?? '—'}</td>
-                  <td>
-                    {company.proofDocument ? (
-                      <a
-                        href={company.proofDocument}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="admin-link"
-                      >
-                        View
-                      </a>
-                    ) : (
-                      '—'
-                    )}
-                  </td>
-                  <td>
-                    <VerificationBadge status={company.verificationStatus} />
-                  </td>
-                  <td>{formatDate(company.createdAt)}</td>
-                  <td>
-                    <div className="admin-table__actions">
-                      {company.verificationStatus === 'PENDING' ? (
-                        <>
-                          <button
-                            type="button"
-                            className="admin-btn-sm admin-btn-sm--success"
-                            disabled={updatingId === company.companyId}
-                            onClick={() => handleApprove(company)}
-                          >
-                            {updatingId === company.companyId
-                              ? 'Updating...'
-                              : 'Approve'}
-                          </button>
-                          <button
-                            type="button"
-                            className="admin-btn-sm admin-btn-sm--danger"
-                            disabled={updatingId === company.companyId}
-                            onClick={() => handleReject(company)}
-                          >
-                            Reject
-                          </button>
-                        </>
-                      ) : (
-                        <span style={{ color: 'var(--text-secondary)', fontSize: 13 }}>
-                          —
-                        </span>
-                      )}
-                    </div>
-                  </td>
+        <ListToolbar
+          search={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Search by company, email, or owner..."
+          searchAriaLabel="Search companies"
+          selects={[
+            {
+              id: 'status',
+              label: 'Filter by verification',
+              value: statusFilter,
+              onChange: setStatusFilter,
+              options: [
+                { value: 'ALL', label: 'All statuses' },
+                { value: 'PENDING', label: 'Pending' },
+                { value: 'APPROVED', label: 'Approved' },
+                { value: 'REJECTED', label: 'Rejected' },
+              ],
+            },
+            {
+              id: 'type',
+              label: 'Filter by company type',
+              value: typeFilter,
+              onChange: setTypeFilter,
+              options: [
+                { value: 'ALL', label: 'All types' },
+                {
+                  value: 'PHARMACEUTICAL_LABORATORY',
+                  label: 'Pharmaceutical laboratory',
+                },
+                {
+                  value: 'PARAPHARMACY_COMPANY',
+                  label: 'Parapharmacy company',
+                },
+              ],
+            },
+            {
+              id: 'ownerStatus',
+              label: 'Filter by owner status',
+              value: ownerStatusFilter,
+              onChange: setOwnerStatusFilter,
+              options: [
+                { value: 'ALL', label: 'All owner statuses' },
+                { value: 'ACTIVE', label: 'Owner active' },
+                { value: 'BLOCKED', label: 'Owner blocked' },
+              ],
+            },
+          ]}
+        />
+
+        {companies.length === 0 ? (
+          <div className="admin-empty">No companies registered yet.</div>
+        ) : filtered.length === 0 ? (
+          <div className="admin-empty">
+            No companies match your search or filters.
+          </div>
+        ) : (
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Type</th>
+                  <th>Owner</th>
+                  <th>Company Email</th>
+                  <th>Phone</th>
+                  <th>Address</th>
+                  <th>Proof</th>
+                  <th>Status</th>
+                  <th>Registered</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {filtered.map((company) => {
+                  const proofUrl = resolveUploadUrl(company.proofDocument);
+
+                  return (
+                    <tr key={company.companyId}>
+                      <td>{company.companyName}</td>
+                      <td>{formatCompanyType(company.companyType)}</td>
+                      <td>
+                        {company.owner.firstName} {company.owner.lastName}
+                        <br />
+                        <span
+                          style={{
+                            color: 'var(--text-secondary)',
+                            fontSize: 13,
+                          }}
+                        >
+                          {company.owner.email}
+                        </span>
+                      </td>
+                      <td>{company.email}</td>
+                      <td>{company.phoneNumber ?? '—'}</td>
+                      <td>{company.address ?? '—'}</td>
+                      <td>
+                        {proofUrl ? (
+                          <a
+                            href={proofUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="admin-link"
+                          >
+                            View
+                          </a>
+                        ) : (
+                          '—'
+                        )}
+                      </td>
+                      <td>
+                        <VerificationBadge
+                          status={company.verificationStatus}
+                        />
+                      </td>
+                      <td>{formatDate(company.createdAt)}</td>
+                      <td>
+                        <div className="admin-table__actions">
+                          {company.verificationStatus === 'PENDING' ? (
+                            <>
+                              <button
+                                type="button"
+                                className="admin-btn-sm admin-btn-sm--success"
+                                disabled={updatingId === company.companyId}
+                                onClick={() => void handleApprove(company)}
+                              >
+                                {updatingId === company.companyId
+                                  ? 'Updating...'
+                                  : 'Approve'}
+                              </button>
+                              <button
+                                type="button"
+                                className="admin-btn-sm admin-btn-sm--danger"
+                                disabled={updatingId === company.companyId}
+                                onClick={() => void handleReject(company)}
+                              >
+                                Reject
+                              </button>
+                            </>
+                          ) : (
+                            <span
+                              style={{
+                                color: 'var(--text-secondary)',
+                                fontSize: 13,
+                              }}
+                            >
+                              —
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

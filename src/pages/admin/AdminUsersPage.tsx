@@ -108,6 +108,7 @@ export function AdminUsersPage() {
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<RoleFilter>('ALL');
+  const [statusFilter, setStatusFilter] = useState('ALL');
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -133,6 +134,7 @@ export function AdminUsersPage() {
     return users.filter((user) => {
       const matchesRole = roleFilter === 'ALL' || user.role === roleFilter;
       if (!matchesRole) return false;
+      if (statusFilter !== 'ALL' && user.status !== statusFilter) return false;
 
       if (!query) return true;
 
@@ -140,10 +142,11 @@ export function AdminUsersPage() {
       return (
         fullName.includes(query) ||
         user.email.toLowerCase().includes(query) ||
-        user.role.toLowerCase().includes(query)
+        user.role.toLowerCase().includes(query) ||
+        (user.phoneNumber ?? '').toLowerCase().includes(query)
       );
     });
-  }, [users, search, roleFilter]);
+  }, [users, search, roleFilter, statusFilter]);
 
   async function handleToggleStatus(user: AdminUser) {
     const newStatus = user.status === 'ACTIVE' ? 'BLOCKED' : 'ACTIVE';
@@ -200,29 +203,51 @@ export function AdminUsersPage() {
       <div className="admin-page-card">
         {error && <div className="admin-error" style={{ marginBottom: 16 }}>{error}</div>}
 
-        <div className="admin-toolbar">
-          <div className="admin-search">
-            <Search size={18} strokeWidth={2} className="admin-search__icon" />
-            <input
-              type="search"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search by name or email..."
-              aria-label="Search users"
-            />
+        <div className="list-toolbar">
+          <div className="list-toolbar__field list-toolbar__field--search">
+            <span className="list-toolbar__label">Search users</span>
+            <div className="admin-search">
+              <Search size={18} strokeWidth={2} className="admin-search__icon" />
+              <input
+                type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search by name or email..."
+                aria-label="Search users"
+              />
+            </div>
           </div>
 
-          <select
-            className="admin-select"
-            value={roleFilter}
-            onChange={(event) => setRoleFilter(event.target.value as RoleFilter)}
-            aria-label="Filter by role"
-          >
-            <option value="ALL">All roles</option>
-            <option value="CLIENT">Client</option>
-            <option value="COMPANY">Company</option>
-            <option value="ADMIN">Admin</option>
-          </select>
+          <label className="list-toolbar__field">
+            <span className="list-toolbar__label">Filter by role</span>
+            <select
+              className="admin-select"
+              value={roleFilter}
+              onChange={(event) =>
+                setRoleFilter(event.target.value as RoleFilter)
+              }
+              aria-label="Filter by role"
+            >
+              <option value="ALL">All roles</option>
+              <option value="CLIENT">Client</option>
+              <option value="COMPANY">Company</option>
+              <option value="ADMIN">Admin</option>
+            </select>
+          </label>
+
+          <label className="list-toolbar__field">
+            <span className="list-toolbar__label">Filter by status</span>
+            <select
+              className="admin-select"
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+              aria-label="Filter by status"
+            >
+              <option value="ALL">All statuses</option>
+              <option value="ACTIVE">Active</option>
+              <option value="BLOCKED">Blocked</option>
+            </select>
+          </label>
         </div>
 
         {users.length === 0 ? (

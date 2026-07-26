@@ -5,6 +5,7 @@ import {
   getAdminCompanies,
   updateCompanyVerification,
 } from '../../services/admin.service';
+import { ListToolbar } from '../../components/common/ListToolbar';
 
 type FilterTab = 'PENDING' | 'APPROVED' | 'REJECTED' | 'ALL';
 
@@ -35,6 +36,8 @@ export function AdminValidationsPage() {
   const [error, setError] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterTab>('PENDING');
+  const [search, setSearch] = useState('');
+  const [typeFilter, setTypeFilter] = useState('ALL');
 
   const loadCompanies = useCallback(async () => {
     setLoading(true);
@@ -65,9 +68,22 @@ export function AdminValidationsPage() {
   );
 
   const filtered = useMemo(() => {
-    if (filter === 'ALL') return companies;
-    return companies.filter((c) => c.verificationStatus === filter);
-  }, [companies, filter]);
+    const query = search.trim().toLowerCase();
+
+    return companies.filter((c) => {
+      if (filter !== 'ALL' && c.verificationStatus !== filter) return false;
+      if (typeFilter !== 'ALL' && c.companyType !== typeFilter) return false;
+      if (!query) return true;
+
+      const ownerName = `${c.owner.firstName} ${c.owner.lastName}`.toLowerCase();
+      return (
+        c.companyName.toLowerCase().includes(query) ||
+        c.email.toLowerCase().includes(query) ||
+        ownerName.includes(query) ||
+        c.owner.email.toLowerCase().includes(query)
+      );
+    });
+  }, [companies, filter, search, typeFilter]);
 
   async function handleApprove(company: AdminCompany) {
     if (!window.confirm(`Approve "${company.companyName}"? They will gain full company access.`)) {
@@ -160,6 +176,32 @@ export function AdminValidationsPage() {
       </p>
 
       {error && <div className="admin-error" style={{ marginBottom: 16 }}>{error}</div>}
+
+      <ListToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search by company, email, or owner..."
+        searchAriaLabel="Search company validations"
+        selects={[
+          {
+            id: 'type',
+            label: 'Filter by company type',
+            value: typeFilter,
+            onChange: setTypeFilter,
+            options: [
+              { value: 'ALL', label: 'All types' },
+              {
+                value: 'PHARMACEUTICAL_LABORATORY',
+                label: 'Pharmaceutical laboratory',
+              },
+              {
+                value: 'PARAPHARMACY_COMPANY',
+                label: 'Parapharmacy company',
+              },
+            ],
+          },
+        ]}
+      />
 
       <div className="admin-filter-tabs">
         {tabs.map((tab) => (

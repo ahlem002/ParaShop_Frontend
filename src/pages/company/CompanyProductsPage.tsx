@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-react';
 import type { CompanyProduct } from '../../types/product';
@@ -7,6 +7,7 @@ import {
   getCompanyProducts,
 } from '../../services/products.service';
 import { resolveUploadUrl } from '../../config/api';
+import { ListToolbar } from '../../components/common/ListToolbar';
 
 function formatPrice(value: number | string) {
   return `${Number(value).toFixed(2)} TND`;
@@ -17,6 +18,10 @@ export function CompanyProductsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [categoryFilter, setCategoryFilter] = useState('ALL');
+  const [stockFilter, setStockFilter] = useState('ALL');
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -33,8 +38,45 @@ export function CompanyProductsPage() {
   }, []);
 
   useEffect(() => {
-    loadProducts();
+    void loadProducts();
   }, [loadProducts]);
+
+  const categories = useMemo(() => {
+    const names = new Set<string>();
+    for (const product of products) {
+      if (product.category?.name) names.add(product.category.name);
+    }
+    return Array.from(names).sort((a, b) => a.localeCompare(b));
+  }, [products]);
+
+  const filtered = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return products.filter((product) => {
+      if (statusFilter !== 'ALL' && product.verificationStatus !== statusFilter) {
+        return false;
+      }
+      if (
+        categoryFilter !== 'ALL' &&
+        product.category?.name !== categoryFilter
+      ) {
+        return false;
+      }
+      if (stockFilter === 'IN' && product.stock <= 0) return false;
+      if (stockFilter === 'LOW' && !(product.stock > 0 && product.stock <= 10)) {
+        return false;
+      }
+      if (stockFilter === 'OUT' && product.stock > 0) return false;
+
+      if (!query) return true;
+
+      return (
+        product.name.toLowerCase().includes(query) ||
+        product.laboratory.toLowerCase().includes(query) ||
+        (product.category?.name ?? '').toLowerCase().includes(query)
+      );
+    });
+  }, [products, search, statusFilter, categoryFilter, stockFilter]);
 
   async function handleDelete(product: CompanyProduct) {
     if (!window.confirm(`Delete "${product.name}"?`)) {
@@ -81,9 +123,56 @@ export function CompanyProductsPage() {
           </div>
         )}
 
+        <ListToolbar
+          search={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Search by name or category..."
+          searchAriaLabel="Search company products"
+          selects={[
+            {
+              id: 'status',
+              label: 'Filter by status',
+              value: statusFilter,
+              onChange: setStatusFilter,
+              options: [
+                { value: 'ALL', label: 'All statuses' },
+                { value: 'PENDING', label: 'Pending' },
+                { value: 'APPROVED', label: 'Approved' },
+                { value: 'REJECTED', label: 'Rejected' },
+              ],
+            },
+            {
+              id: 'category',
+              label: 'Filter by category',
+              value: categoryFilter,
+              onChange: setCategoryFilter,
+              options: [
+                { value: 'ALL', label: 'All categories' },
+                ...categories.map((name) => ({ value: name, label: name })),
+              ],
+            },
+            {
+              id: 'stock',
+              label: 'Filter by stock',
+              value: stockFilter,
+              onChange: setStockFilter,
+              options: [
+                { value: 'ALL', label: 'All stock' },
+                { value: 'IN', label: 'In stock' },
+                { value: 'LOW', label: 'Low stock (≤ 10)' },
+                { value: 'OUT', label: 'Out of stock' },
+              ],
+            },
+          ]}
+        />
+
         {products.length === 0 ? (
           <div className="admin-empty">
             No products yet. Add your first product to get started.
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="admin-empty">
+            No products match your search or filters.
           </div>
         ) : (
           <div className="admin-table-wrap">
@@ -100,7 +189,7 @@ export function CompanyProductsPage() {
                 </tr>
               </thead>
               <tbody>
-                {products.map((product) => {
+                {filtered.map((product) => {
                   const imageUrl = resolveUploadUrl(product.images?.[0] ?? null);
 
                   return (
@@ -113,23 +202,10 @@ export function CompanyProductsPage() {
                             className="product-thumb"
                           />
                         ) : (
-                          <span className="product-thumb product-thumb--empty">
-                            —
-                          </span>
+                          <div className="product-thumb">—</div>
                         )}
                       </td>
-                      <td>
-                        <div>{product.name}</div>
-                        {product.verificationStatus === 'REJECTED' &&
-                          product.rejectionReason && (
-                            <p
-                              className="admin-validation-card__sub"
-                              style={{ color: 'var(--error)', marginTop: 4 }}
-                            >
-                              Denied: {product.rejectionReason}
-                            </p>
-                          )}
-                      </td>
+                      <td>{product.name}</td>
                       <td>{product.category?.name ?? '—'}</td>
                       <td>{formatPrice(product.price)}</td>
                       <td>{product.stock}</td>
@@ -160,9 +236,9 @@ export function CompanyProductsPage() {
                           </Link>
                           <button
                             type="button"
-                            className="admin-icon-btn admin-icon-btn--danger"
-                            onClick={() => handleDelete(product)}
+                            className="admin-icon-btn"
                             disabled={deletingId === product.productId}
+                            onClick={() => void handleDelete(product)}
                             aria-label={`Delete ${product.name}`}
                             title="Delete"
                           >

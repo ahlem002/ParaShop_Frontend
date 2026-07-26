@@ -154,7 +154,7 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #ffffff;
+  background: var(--white-cards);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
   transition: transform 0.2s ease;
 }
@@ -328,6 +328,9 @@
   cursor: pointer;
   transition: transform 0.2s ease;
   border: none;
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 
 .category-card:hover {

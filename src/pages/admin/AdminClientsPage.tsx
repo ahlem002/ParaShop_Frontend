@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { AdminClient } from '../../types/admin';
 import {
   getAdminClients,
   updateClientStatus,
 } from '../../services/admin.service';
+import { ListToolbar } from '../../components/common/ListToolbar';
 
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString();
@@ -22,6 +23,8 @@ export function AdminClientsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
 
   const loadClients = useCallback(async () => {
     setLoading(true);
@@ -38,14 +41,37 @@ export function AdminClientsPage() {
   }, []);
 
   useEffect(() => {
-    loadClients();
+    void loadClients();
   }, [loadClients]);
+
+  const filtered = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return clients.filter((client) => {
+      if (statusFilter !== 'ALL' && client.status !== statusFilter) {
+        return false;
+      }
+      if (!query) return true;
+
+      const fullName = `${client.firstName} ${client.lastName}`.toLowerCase();
+      return (
+        fullName.includes(query) ||
+        client.email.toLowerCase().includes(query) ||
+        (client.phoneNumber ?? '').toLowerCase().includes(query) ||
+        (client.address ?? '').toLowerCase().includes(query)
+      );
+    });
+  }, [clients, search, statusFilter]);
 
   async function handleToggleStatus(client: AdminClient) {
     const newStatus = client.status === 'ACTIVE' ? 'BLOCKED' : 'ACTIVE';
     const action = newStatus === 'BLOCKED' ? 'block' : 'activate';
 
-    if (!window.confirm(`Are you sure you want to ${action} ${client.firstName} ${client.lastName}?`)) {
+    if (
+      !window.confirm(
+        `Are you sure you want to ${action} ${client.firstName} ${client.lastName}?`,
+      )
+    ) {
       return;
     }
 
@@ -54,7 +80,9 @@ export function AdminClientsPage() {
     try {
       const updated = await updateClientStatus(client.clientId, newStatus);
       setClients((prev) =>
-        prev.map((item) => (item.clientId === updated.clientId ? updated : item)),
+        prev.map((item) =>
+          item.clientId === updated.clientId ? updated : item,
+        ),
       );
     } catch {
       setError(`Failed to ${action} client.`);
@@ -91,67 +119,97 @@ export function AdminClientsPage() {
     <div className="admin-page">
       <h1 className="admin-page-title">Client Management</h1>
       <div className="admin-page-card">
-      {error && <div className="admin-error" style={{ marginBottom: 16 }}>{error}</div>}
+        {error && (
+          <div className="admin-error" style={{ marginBottom: 16 }}>
+            {error}
+          </div>
+        )}
 
-      {clients.length === 0 ? (
-        <div className="admin-empty">No clients registered yet.</div>
-      ) : (
-        <div className="admin-table-wrap">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Birthday</th>
-                <th>Gender</th>
-                <th>Address</th>
-                <th>Status</th>
-                <th>Joined</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {clients.map((client) => (
-                <tr key={client.clientId}>
-                  <td>
-                    {client.firstName} {client.lastName}
-                  </td>
-                  <td>{client.email}</td>
-                  <td>{client.phoneNumber ?? '—'}</td>
-                  <td>{client.birthDate ? formatDate(client.birthDate) : '—'}</td>
-                  <td>{client.gender ?? '—'}</td>
-                  <td>{client.address ?? '—'}</td>
-                  <td>
-                    <StatusBadge status={client.status} />
-                  </td>
-                  <td>{formatDate(client.createdAt)}</td>
-                  <td>
-                    <div className="admin-table__actions">
-                      <button
-                        type="button"
-                        className={`admin-btn-sm ${
-                          client.status === 'ACTIVE'
-                            ? 'admin-btn-sm--danger'
-                            : 'admin-btn-sm--success'
-                        }`}
-                        disabled={updatingId === client.clientId}
-                        onClick={() => handleToggleStatus(client)}
-                      >
-                        {updatingId === client.clientId
-                          ? 'Updating...'
-                          : client.status === 'ACTIVE'
-                            ? 'Block'
-                            : 'Activate'}
-                      </button>
-                    </div>
-                  </td>
+        <ListToolbar
+          search={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Search by name, email, or phone..."
+          searchAriaLabel="Search clients"
+          selects={[
+            {
+              id: 'status',
+              label: 'Filter by status',
+              value: statusFilter,
+              onChange: setStatusFilter,
+              options: [
+                { value: 'ALL', label: 'All statuses' },
+                { value: 'ACTIVE', label: 'Active' },
+                { value: 'BLOCKED', label: 'Blocked' },
+              ],
+            },
+          ]}
+        />
+
+        {clients.length === 0 ? (
+          <div className="admin-empty">No clients registered yet.</div>
+        ) : filtered.length === 0 ? (
+          <div className="admin-empty">
+            No clients match your search or filter.
+          </div>
+        ) : (
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Birthday</th>
+                  <th>Gender</th>
+                  <th>Address</th>
+                  <th>Status</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {filtered.map((client) => (
+                  <tr key={client.clientId}>
+                    <td>
+                      {client.firstName} {client.lastName}
+                    </td>
+                    <td>{client.email}</td>
+                    <td>{client.phoneNumber ?? '—'}</td>
+                    <td>
+                      {client.birthDate ? formatDate(client.birthDate) : '—'}
+                    </td>
+                    <td>{client.gender ?? '—'}</td>
+                    <td>{client.address ?? '—'}</td>
+                    <td>
+                      <StatusBadge status={client.status} />
+                    </td>
+                    <td>{formatDate(client.createdAt)}</td>
+                    <td>
+                      <div className="admin-table__actions">
+                        <button
+                          type="button"
+                          className={`admin-btn-sm ${
+                            client.status === 'ACTIVE'
+                              ? 'admin-btn-sm--danger'
+                              : 'admin-btn-sm--success'
+                          }`}
+                          disabled={updatingId === client.clientId}
+                          onClick={() => void handleToggleStatus(client)}
+                        >
+                          {updatingId === client.clientId
+                            ? 'Updating...'
+                            : client.status === 'ACTIVE'
+                              ? 'Block'
+                              : 'Activate'}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

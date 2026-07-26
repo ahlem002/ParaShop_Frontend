@@ -5,7 +5,6 @@ import {
   Building2,
   Check,
   CheckCheck,
-  Filter,
   Package,
   Settings2,
   XCircle,
@@ -17,7 +16,9 @@ import type {
   NotificationType,
 } from '../types/notification';
 import { formatNotificationTime } from '../utils/notification-time';
+import { ListToolbar } from '../components/common/ListToolbar';
 import '../styles/pages/notifications.css';
+import '../styles/pages/admin.css';
 
 const PREF_KEY = 'parashop-notification-prefs';
 
@@ -96,6 +97,7 @@ export function NotificationsPage() {
     useNotifications();
   const [tab, setTab] = useState<NotificationFilterTab>('all');
   const [prefs, setPrefs] = useState(loadPrefs);
+  const [search, setSearch] = useState('');
 
   const counts = useMemo(() => {
     const products = notifications.filter((n) =>
@@ -113,10 +115,18 @@ export function NotificationsPage() {
     };
   }, [notifications, unreadCount]);
 
-  const filtered = useMemo(
-    () => notifications.filter((item) => matchesTab(item, tab)),
-    [notifications, tab],
-  );
+  const filtered = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return notifications.filter((item) => {
+      if (!matchesTab(item, tab)) return false;
+      if (!query) return true;
+      return (
+        item.title.toLowerCase().includes(query) ||
+        item.message.toLowerCase().includes(query)
+      );
+    });
+  }, [notifications, tab, search]);
 
   function togglePref(key: PrefKey) {
     setPrefs((prev) => {
@@ -163,12 +173,15 @@ export function NotificationsPage() {
               <CheckCheck size={16} strokeWidth={2} />
               Mark all as read
             </button>
-            <button type="button" className="notifications-page__btn" disabled>
-              <Filter size={16} strokeWidth={2} />
-              Filter
-            </button>
           </div>
         </div>
+
+        <ListToolbar
+          search={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Search notifications..."
+          searchAriaLabel="Search notifications"
+        />
 
         <div className="notifications-tabs" role="tablist">
           {tabs.map((item) => (

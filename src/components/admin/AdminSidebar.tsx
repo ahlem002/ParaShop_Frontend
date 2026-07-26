@@ -64,7 +64,7 @@ export function AdminSidebar() {
       </nav>
 
       <div className="admin-sidebar__account">
-        <ThemeToggle className="theme-toggle--sidebar" />
+        <ThemeToggle showLabel />
         {user && (
           <p className="admin-sidebar__user">
             {user.firstName} {user.lastName}

@@ -2,10 +2,10 @@
   color-scheme: light;
 
   /* Brand defaults — overridden live by ThemeContext intensity */
-  --primary-lavender: #b4a3e0;
-  --primary-hover: #9684c4;
-  --light-accent: #efeaf8;
-  --bg-very-light: #f8f6fc;
+  --primary-lavender: #b9a8ec;
+  --primary-hover: #9d8ad4;
+  --light-accent: #efe8fc;
+  --bg-very-light: #f8f8fa;
   --white-cards: #ffffff;
   --page-bg: #ffffff;
 
@@ -21,14 +21,14 @@
   --info: #3b82f6;
 
   /* Borders */
-  --border-input: #e8e0f5;
+  --border-input: #ececf0;
 
   /* Dashboard sidebars */
-  --sidebar-client: #9684c4;
-  --sidebar-company: #b4a3e0;
+  --sidebar-client: #9d8ad4;
+  --sidebar-company: #b9a8ec;
   --sidebar-admin-bg: #ffffff;
-  --sidebar-admin-border: #eee8f8;
-  --sidebar-admin-hover: #f8f6fc;
+  --sidebar-admin-border: #ececf0;
+  --sidebar-admin-hover: #f8f8fa;
 
   /* Component Border Radius */
   --radius-button: 12px;
@@ -42,8 +42,8 @@
   --navbar-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 
   /* Notification / status icon tints */
-  --accent-icon-bg: #efe9fb;
-  --accent-icon-fg: #9684c4;
+  --accent-icon-bg: #efe8fc;
+  --accent-icon-fg: #9d8ad4;
 }
 
 [data-theme='dark'] {

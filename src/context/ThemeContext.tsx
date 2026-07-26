@@ -25,52 +25,52 @@ export interface AccentOption {
   swatch: string;
 }
 
-/** Hue for each accent family */
+/** Hue for each accent family — tuned for pretty pastels */
 const ACCENT_HUES: Record<AccentColor, number> = {
-  lavender: 258,
-  pink: 330,
-  rose: 355,
-  blue: 210,
-  mint: 158,
-  peach: 28,
+  lavender: 262,
+  pink: 338,
+  rose: 348,
+  blue: 204,
+  mint: 162,
+  peach: 22,
 };
 
 export const ACCENT_OPTIONS: AccentOption[] = [
   {
     value: 'lavender',
     label: 'Lavender',
-    description: 'Soft muted purple',
-    swatch: 'hsl(258, 55%, 72%)',
+    description: 'Soft lilac pastel',
+    swatch: 'hsl(262 62% 74%)',
   },
   {
     value: 'pink',
     label: 'Pastel pink',
-    description: 'Gentle blush accents',
-    swatch: 'hsl(330, 50%, 76%)',
+    description: 'Sweet blush pink',
+    swatch: 'hsl(338 70% 78%)',
   },
   {
     value: 'rose',
     label: 'Rose',
-    description: 'Dusty rose tones',
-    swatch: 'hsl(355, 48%, 76%)',
+    description: 'Soft rose petal',
+    swatch: 'hsl(348 68% 76%)',
   },
   {
     value: 'blue',
     label: 'Sky blue',
-    description: 'Calm powder blue',
-    swatch: 'hsl(210, 48%, 72%)',
+    description: 'Airy powder blue',
+    swatch: 'hsl(204 68% 74%)',
   },
   {
     value: 'mint',
     label: 'Mint',
-    description: 'Soft sage green',
-    swatch: 'hsl(158, 38%, 68%)',
+    description: 'Fresh mint cream',
+    swatch: 'hsl(162 52% 70%)',
   },
   {
     value: 'peach',
     label: 'Peach',
-    description: 'Warm muted apricot',
-    swatch: 'hsl(28, 55%, 74%)',
+    description: 'Warm peach cream',
+    swatch: 'hsl(22 78% 76%)',
   },
 ];
 
@@ -88,7 +88,7 @@ interface ThemeContextValue {
 const THEME_KEY = 'parashop-theme';
 const ACCENT_KEY = 'parashop-accent';
 const INTENSITY_KEY = 'parashop-accent-intensity';
-const DEFAULT_INTENSITY = 35;
+const DEFAULT_INTENSITY = 48;
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
@@ -154,39 +154,51 @@ function applyAccentPalette(
   const t = clamp(intensity, 0, 100) / 100;
 
   if (theme === 'light') {
-    const s = 18 + t * 52; // 18 → 70
-    const l = 78 - t * 22; // 78 → 56
-    const hoverS = Math.min(78, s + 8);
-    const hoverL = Math.max(42, l - 10);
-    const softS = 10 + t * 18;
-    const softL = 95 - t * 4;
-    const bgL = 98 - t * 2;
-    const borderL = 92 - t * 8;
-    const iconBgL = 94 - t * 5;
-    const shadowA = 0.05 + t * 0.1;
+    // Soft = milky / washed pastel, Strong = deeper richer pastel.
+    // Mix with white so intensity is obvious on solid buttons (not only shadows).
+    const richS = 72;
+    const richL = 58;
+    const rich = hsl(h, richS, richL);
+    const richHover = hsl(h, Math.min(84, richS + 6), Math.max(48, richL - 10));
+    const amount = Math.round(32 + t * 68); // 32% → 100% color in the mix
+    const hoverAmount = Math.min(100, amount + 8);
+    const softAmount = Math.round(12 + t * 28);
+    const shadowA = 0.06 + t * 0.14;
 
-    root.style.setProperty('--primary-lavender', hsl(h, s, l));
-    root.style.setProperty('--primary-hover', hsl(h, hoverS, hoverL));
-    root.style.setProperty('--light-accent', hsl(h, softS, softL));
-    root.style.setProperty('--bg-very-light', hsl(h, Math.max(6, softS * 0.45), bgL));
-    root.style.setProperty('--border-input', hsl(h, softS, borderL));
-    root.style.setProperty('--sidebar-client', hsl(h, hoverS, hoverL));
-    root.style.setProperty('--sidebar-company', hsl(h, s, l));
-    root.style.setProperty('--sidebar-admin-border', hsl(h, softS * 0.8, borderL + 2));
-    root.style.setProperty('--sidebar-admin-hover', hsl(h, softS * 0.5, bgL));
-    root.style.setProperty('--soft-shadow', `0 4px 18px ${hsl(h, s, l, shadowA)}`);
-    root.style.setProperty('--accent-icon-bg', hsl(h, softS, iconBgL));
-    root.style.setProperty('--accent-icon-fg', hsl(h, hoverS, hoverL));
+    const primary = `color-mix(in srgb, ${rich} ${amount}%, white)`;
+    const primaryHover = `color-mix(in srgb, ${richHover} ${hoverAmount}%, white)`;
+    const lightAccent = `color-mix(in srgb, ${rich} ${softAmount}%, white)`;
+
+    // Page / surface backgrounds stay neutral — never follow accent hue
+    const neutralBg = '#f8f8fa';
+    const neutralBorder = '#ececf0';
+
+    root.style.setProperty('--primary-lavender', primary);
+    root.style.setProperty('--primary-hover', primaryHover);
+    root.style.setProperty('--light-accent', lightAccent);
+    root.style.setProperty('--bg-very-light', neutralBg);
+    root.style.setProperty('--page-bg', '#ffffff');
+    root.style.setProperty('--border-input', neutralBorder);
+    root.style.setProperty('--sidebar-client', primaryHover);
+    root.style.setProperty('--sidebar-company', primary);
+    root.style.setProperty('--sidebar-admin-border', neutralBorder);
+    root.style.setProperty('--sidebar-admin-hover', neutralBg);
+    root.style.setProperty(
+      '--soft-shadow',
+      `0 4px 18px color-mix(in srgb, ${rich} ${Math.round(18 + t * 40)}%, transparent)`,
+    );
+    root.style.setProperty('--accent-icon-bg', lightAccent);
+    root.style.setProperty('--accent-icon-fg', primaryHover);
     return;
   }
 
-  // Dark mode: keep accents readable, intensity adds saturation
-  const s = 22 + t * 42; // 22 → 64
-  const l = 70 + t * 8; // 70 → 78
-  const hoverS = Math.min(70, s + 6);
-  const hoverL = Math.min(86, l + 8);
-  const softS = 18 + t * 20;
-  const softL = 18 + t * 4;
+  // Dark mode: soft luminous pastels → stronger pastels
+  const s = 40 + t * 38; // 40 → 78
+  const l = 78 - t * 12; // 78 → 66 (stronger = slightly deeper)
+  const hoverS = Math.min(82, s + 6);
+  const hoverL = Math.min(88, l + 8);
+  const softS = 24 + t * 22;
+  const softL = 22 + t * 6;
   const shadowA = 0.4;
 
   root.style.setProperty('--primary-lavender', hsl(h, s, l));

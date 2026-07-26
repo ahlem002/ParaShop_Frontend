@@ -73,38 +73,100 @@
   text-decoration: none;
 }
 
-.theme-toggle {
+.theme-switch-wrap {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+}
+
+.theme-switch-wrap--labeled {
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 10px 12px;
   border: 1px solid var(--border-input);
+  border-radius: var(--radius-card);
   background: var(--white-cards);
+}
+
+.theme-switch-wrap__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.theme-switch-wrap__title {
+  font-size: 13px;
+  font-weight: 600;
   color: var(--text-main);
-  border-radius: var(--radius-button);
-  padding: 8px 12px;
+  line-height: 1.2;
+}
+
+.theme-switch-wrap__hint {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  padding: 0;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.theme-switch__icon {
+  flex-shrink: 0;
+  opacity: 0.45;
   transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
+    opacity 0.15s ease,
     color 0.15s ease;
 }
 
-.theme-toggle:hover {
-  background: var(--bg-very-light);
-  border-color: var(--primary-lavender);
+.theme-switch:not(.is-on) .theme-switch__icon--sun,
+.theme-switch.is-on .theme-switch__icon--moon {
+  opacity: 1;
   color: var(--primary-lavender);
 }
 
-.theme-toggle__label {
-  line-height: 1;
+.theme-switch__track {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  background: #d4d4d8;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
 }
 
-.theme-toggle--sidebar {
-  width: 100%;
-  justify-content: flex-start;
-  margin-bottom: 10px;
+.theme-switch.is-on .theme-switch__track {
+  background: var(--primary-lavender);
+}
+
+.theme-switch__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease;
+}
+
+.theme-switch.is-on .theme-switch__thumb {
+  transform: translateX(18px);
+}
+
+.theme-switch:focus-visible {
+  outline: 2px solid var(--primary-lavender);
+  outline-offset: 3px;
+  border-radius: 8px;
 }
 
 /* Nav avatar (shared) */

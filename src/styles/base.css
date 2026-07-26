@@ -6,9 +6,10 @@
 }
 
 body {
-  background-color: var(--white-cards);
+  background-color: var(--page-bg);
   color: var(--text-main);
   padding-bottom: 60px;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .container {

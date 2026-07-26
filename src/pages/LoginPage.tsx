@@ -9,6 +9,7 @@ export function LoginPage() {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -18,7 +19,7 @@ export function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      const redirectPath = await login({ email, password });
+      const redirectPath = await login({ email, password }, rememberMe);
       navigate(redirectPath);
     } catch {
       setError('Invalid email or password. Please try again.');
@@ -62,6 +63,16 @@ export function LoginPage() {
                 required
               />
             </div>
+
+            <label className="auth-remember" htmlFor="rememberMe">
+              <input
+                id="rememberMe"
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              <span>Remember me on this device</span>
+            </label>
 
             <button
               type="submit"

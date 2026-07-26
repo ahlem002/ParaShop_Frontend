@@ -1,10 +1,11 @@
-import { apiFetch } from '../config/api';
+import { apiFetch, authFetch } from '../config/api';
 import type {
   AuthResponse,
   AuthUser,
   LoginPayload,
   RegisterClientPayload,
   RegisterCompanyPayload,
+  UpdateProfilePayload,
 } from '../types/auth';
 
 export function registerClient(payload: RegisterClientPayload) {
@@ -59,5 +60,41 @@ export function getProfile(token: string) {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+  });
+}
+
+export function updateProfile(payload: UpdateProfilePayload) {
+  const formData = new FormData();
+  formData.append('firstName', payload.firstName);
+  formData.append('lastName', payload.lastName);
+
+  if (payload.phoneNumber !== undefined) {
+    formData.append('phoneNumber', payload.phoneNumber);
+  }
+  if (payload.birthDate !== undefined) {
+    formData.append('birthDate', payload.birthDate);
+  }
+  if (payload.gender !== undefined) {
+    formData.append('gender', payload.gender);
+  }
+  if (payload.address !== undefined) {
+    formData.append('address', payload.address);
+  }
+  if (payload.companyName !== undefined) {
+    formData.append('companyName', payload.companyName);
+  }
+  if (payload.description !== undefined) {
+    formData.append('description', payload.description);
+  }
+  if (payload.companyPhoneNumber !== undefined) {
+    formData.append('companyPhoneNumber', payload.companyPhoneNumber);
+  }
+  if (payload.profileImage) {
+    formData.append('profileImage', payload.profileImage);
+  }
+
+  return authFetch<AuthUser>('/auth/profile', {
+    method: 'PATCH',
+    body: formData,
   });
 }

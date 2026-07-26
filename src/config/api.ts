@@ -56,5 +56,6 @@ export function resolveUploadUrl(path: string | null | undefined): string | null
   if (path.startsWith('http://') || path.startsWith('https://')) {
     return path;
   }
-  return path;
+  // Ensure leading slash so Vite can proxy /uploads to the API server
+  return path.startsWith('/') ? path : `/${path}`;
 }

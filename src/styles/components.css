@@ -61,8 +61,112 @@
   color: var(--primary-lavender);
 }
 
+.nav-auth {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .nav-auth a {
   text-decoration: none;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border-input);
+  background: var(--white-cards);
+  color: var(--text-main);
+  border-radius: var(--radius-button);
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-very-light);
+  border-color: var(--primary-lavender);
+  color: var(--primary-lavender);
+}
+
+.theme-toggle__label {
+  line-height: 1;
+}
+
+.theme-toggle--sidebar {
+  width: 100%;
+  justify-content: flex-start;
+  margin-bottom: 10px;
+}
+
+/* Nav avatar (shared) */
+.nav-avatar {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  max-width: 160px;
+}
+
+.nav-avatar:hover .nav-avatar__name {
+  color: var(--primary-lavender);
+}
+
+.nav-avatar__circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--light-accent);
+  border: 2px solid rgba(167, 139, 250, 0.4);
+}
+
+.nav-avatar__circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nav-avatar__initials {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-lavender);
+  text-transform: uppercase;
+}
+
+.nav-avatar__meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.nav-avatar__name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .nav-avatar__meta {
+    display: none;
+  }
 }
 
 /* Buttons */
@@ -201,7 +305,7 @@
   position: absolute;
   top: 32px;
   right: 32px;
-  background: white;
+  background: var(--white-cards);
   border: none;
   width: 32px;
   height: 32px;

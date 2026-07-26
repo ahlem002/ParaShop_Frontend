@@ -2,13 +2,31 @@ export type UserRole = 'CLIENT' | 'COMPANY' | 'ADMIN';
 
 export type VerificationStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
+export interface AuthCompanyProfile {
+  companyId: string;
+  companyName: string;
+  companyType: string;
+  establishmentDate: string;
+  description: string | null;
+  phoneNumber: string | null;
+  email: string;
+  proofDocument: string | null;
+}
+
 export interface AuthUser {
   userId: string;
   firstName: string;
   lastName: string;
   email: string;
+  phoneNumber?: string | null;
+  birthDate?: string | null;
+  gender?: string | null;
   role: UserRole;
   companyVerificationStatus: VerificationStatus | null;
+  address?: string | null;
+  profileImage?: string | null;
+  createdAt?: string | null;
+  company?: AuthCompanyProfile | null;
 }
 
 export interface AuthResponse {
@@ -46,4 +64,17 @@ export interface RegisterCompanyPayload {
 export interface LoginPayload {
   email: string;
   password: string;
+}
+
+export interface UpdateProfilePayload {
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  birthDate?: string;
+  gender?: string;
+  address?: string;
+  companyName?: string;
+  description?: string;
+  companyPhoneNumber?: string;
+  profileImage?: File | null;
 }

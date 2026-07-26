@@ -1,10 +1,13 @@
 :root {
+  color-scheme: light;
+
   /* Brand Colors */
   --primary-lavender: #8b5cf6;
   --primary-hover: #6d28d9;
   --light-accent: #ddd6fe;
   --bg-very-light: #f5f3ff;
   --white-cards: #ffffff;
+  --page-bg: #ffffff;
 
   /* Text Colors */
   --text-main: #1f2937;
@@ -37,4 +40,35 @@
   /* Shadows */
   --soft-shadow: 0 4px 20px rgba(139, 92, 246, 0.12);
   --navbar-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --primary-lavender: #a78bfa;
+  --primary-hover: #c4b5fd;
+  --light-accent: #2e1065;
+  --bg-very-light: #16161f;
+  --white-cards: #1c1c28;
+  --page-bg: #0f0f14;
+
+  --text-main: #f3f4f6;
+  --text-secondary: #a1a1aa;
+  --text-disabled: #71717a;
+
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --error: #f87171;
+  --info: #60a5fa;
+
+  --border-input: #3f3f54;
+
+  --sidebar-client: #7c3aed;
+  --sidebar-company: #8b5cf6;
+  --sidebar-admin-bg: #151520;
+  --sidebar-admin-border: #2a2a3a;
+  --sidebar-admin-hover: #222233;
+
+  --soft-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+  --navbar-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }

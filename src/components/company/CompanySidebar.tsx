@@ -1,10 +1,12 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, LogOut, Package } from 'lucide-react';
+import { LayoutDashboard, LogOut, Package, Settings } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { ThemeToggle } from '../layout/ThemeToggle';
 
 const navItems = [
   { label: 'Dashboard', to: '/company', icon: LayoutDashboard },
   { label: 'Product Management', to: '/company/products', icon: Package },
+  { label: 'Settings', to: '/company/settings', icon: Settings },
 ];
 
 export function CompanySidebar() {
@@ -48,6 +50,7 @@ export function CompanySidebar() {
       </nav>
 
       <div className="admin-sidebar__account">
+        <ThemeToggle className="theme-toggle--sidebar" />
         {user && (
           <p className="admin-sidebar__user">
             {user.firstName} {user.lastName}

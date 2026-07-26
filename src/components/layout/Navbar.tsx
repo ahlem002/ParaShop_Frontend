@@ -1,17 +1,13 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Logo } from './Logo';
+import { ThemeToggle } from './ThemeToggle';
+import { NavAvatar } from './NavAvatar';
 
 const navLinks = [
   { label: 'Home', to: '/' },
   { label: 'Products', to: '/products' },
 ];
-
-function getRoleBadgeClass(role: string) {
-  if (role === 'ADMIN') return 'role-badge role-badge--admin';
-  if (role === 'COMPANY') return 'role-badge role-badge--company';
-  return 'role-badge';
-}
 
 export function Navbar() {
   const navigate = useNavigate();
@@ -38,13 +34,20 @@ export function Navbar() {
             {link.label}
           </NavLink>
         ))}
+        {isAuthenticated && user?.role === 'CLIENT' && (
+          <NavLink
+            to="/settings"
+            className={({ isActive }) => (isActive ? 'active' : undefined)}
+          >
+            Settings
+          </NavLink>
+        )}
       </nav>
       <div className="nav-auth">
+        <ThemeToggle />
         {isAuthenticated && user ? (
           <>
-            <span className={getRoleBadgeClass(user.role)}>
-              {user.role.toLowerCase()}
-            </span>
+            <NavAvatar />
             <button
               type="button"
               className="btn btn-secondary btn-nav"

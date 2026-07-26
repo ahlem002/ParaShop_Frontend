@@ -168,6 +168,25 @@
   font-size: 15px;
 }
 
+.auth-remember {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 18px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.auth-remember input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary-lavender);
+  cursor: pointer;
+}
+
 .auth-footer {
   margin-top: 24px;
   text-align: center;

@@ -124,7 +124,7 @@ export function CompanyProductsPage() {
                           product.rejectionReason && (
                             <p
                               className="admin-validation-card__sub"
-                              style={{ color: '#b42318', marginTop: 4 }}
+                              style={{ color: 'var(--error)', marginTop: 4 }}
                             >
                               Denied: {product.rejectionReason}
                             </p>

@@ -5,10 +5,12 @@ import {
   LayoutDashboard,
   LogOut,
   PackageCheck,
+  Settings,
   UserCog,
   Users,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { ThemeToggle } from '../layout/ThemeToggle';
 
 const navItems = [
   { label: 'Dashboard', to: '/admin', icon: LayoutDashboard },
@@ -17,6 +19,7 @@ const navItems = [
   { label: 'User Management', to: '/admin/users', icon: UserCog },
   { label: 'Client Management', to: '/admin/clients', icon: Users },
   { label: 'Company Management', to: '/admin/companies', icon: Building2 },
+  { label: 'Settings', to: '/admin/settings', icon: Settings },
 ];
 
 export function AdminSidebar() {
@@ -60,6 +63,7 @@ export function AdminSidebar() {
       </nav>
 
       <div className="admin-sidebar__account">
+        <ThemeToggle className="theme-toggle--sidebar" />
         {user && (
           <p className="admin-sidebar__user">
             {user.firstName} {user.lastName}

@@ -75,6 +75,28 @@
   font-size: 12px;
 }
 
+.settings-page .settings-accent-grid {
+  gap: 10px;
+}
+
+.settings-page .settings-accent-card {
+  padding: 10px 12px;
+  gap: 10px;
+}
+
+.settings-page .settings-accent-card__swatch {
+  width: 24px;
+  height: 24px;
+}
+
+.settings-page .settings-accent-card__body strong {
+  font-size: 13px;
+}
+
+.settings-page .settings-accent-card__body span {
+  font-size: 11px;
+}
+
 .settings-page .form-group input,
 .settings-page .form-group select,
 .settings-page .form-group textarea {

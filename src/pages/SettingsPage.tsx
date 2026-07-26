@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { ChevronDown, Moon, Pencil, Sun } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useTheme, type ThemeMode } from '../context/ThemeContext';
+import { useTheme, ACCENT_OPTIONS, type ThemeMode } from '../context/ThemeContext';
 import {
   changePassword,
   disableTwoFactor,
@@ -26,7 +26,7 @@ function formatDateLabel(value: string | null | undefined) {
 
 export function SettingsPage() {
   const { user, updateProfile, setUserFromProfile } = useAuth();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, accent, setAccent } = useTheme();
   const [activeTab, setActiveTab] = useState<SettingsTab>('appearance');
   const [passwordOpen, setPasswordOpen] = useState(false);
 
@@ -306,6 +306,40 @@ export function SettingsPage() {
                     <span className="settings-theme-card__body">
                       <strong>{label}</strong>
                       <span>{description}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <h3 className="profile-section-title settings-accent-title">
+              Theme color
+            </h3>
+            <p className="profile-page__subtitle" style={{ marginBottom: 18 }}>
+              Buttons, links, borders, and accents follow this color across the
+              site.
+            </p>
+
+            <div className="settings-accent-grid">
+              {ACCENT_OPTIONS.map((option) => {
+                const selected = accent === option.value;
+
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={`settings-accent-card${selected ? ' is-selected' : ''}`}
+                    onClick={() => setAccent(option.value)}
+                    aria-pressed={selected}
+                  >
+                    <span
+                      className="settings-accent-card__swatch"
+                      style={{ background: option.swatch }}
+                      aria-hidden
+                    />
+                    <span className="settings-accent-card__body">
+                      <strong>{option.label}</strong>
+                      <span>{option.description}</span>
                     </span>
                   </button>
                 );

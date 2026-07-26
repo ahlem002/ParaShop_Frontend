@@ -1,0 +1,40 @@
+:root {
+  /* Brand Colors */
+  --primary-lavender: #8b5cf6;
+  --primary-hover: #6d28d9;
+  --light-accent: #ddd6fe;
+  --bg-very-light: #f5f3ff;
+  --white-cards: #ffffff;
+
+  /* Text Colors */
+  --text-main: #1f2937;
+  --text-secondary: #6b7280;
+  --text-disabled: #9ca3af;
+
+  /* Status Colors */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  /* Borders */
+  --border-input: #e9d5ff;
+
+  /* Dashboard sidebars */
+  --sidebar-client: #6d28d9;
+  --sidebar-company: #8b5cf6;
+  --sidebar-admin-bg: #ffffff;
+  --sidebar-admin-border: #ede9fe;
+  --sidebar-admin-hover: #f5f3ff;
+
+  /* Component Border Radius */
+  --radius-button: 12px;
+  --radius-card: 16px;
+  --radius-input: 12px;
+  --radius-image: 16px;
+  --radius-modal: 20px;
+
+  /* Shadows */
+  --soft-shadow: 0 4px 20px rgba(139, 92, 246, 0.12);
+  --navbar-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}

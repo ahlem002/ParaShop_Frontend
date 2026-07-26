@@ -36,6 +36,23 @@
   padding: 20px;
 }
 
+.settings-page__tabs-card {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.settings-page__tabs-card .profile-tabs {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.settings-appearance-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .settings-page .profile-tabs__btn {
   padding: 10px 12px;
   font-size: 14px;

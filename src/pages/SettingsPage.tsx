@@ -26,7 +26,8 @@ function formatDateLabel(value: string | null | undefined) {
 
 export function SettingsPage() {
   const { user, updateProfile, setUserFromProfile } = useAuth();
-  const { theme, setTheme, accent, setAccent } = useTheme();
+  const { theme, setTheme, accent, setAccent, accentIntensity, setAccentIntensity } =
+    useTheme();
   const [activeTab, setActiveTab] = useState<SettingsTab>('appearance');
   const [passwordOpen, setPasswordOpen] = useState(false);
 
@@ -261,7 +262,7 @@ export function SettingsPage() {
         </div>
       </div>
 
-      <section className="profile-card profile-form-card settings-page__card">
+      <section className="profile-card profile-form-card settings-page__card settings-page__tabs-card">
         <div className="profile-tabs">
           {(
             [
@@ -280,12 +281,14 @@ export function SettingsPage() {
             </button>
           ))}
         </div>
+      </section>
 
-        {activeTab === 'appearance' && (
-          <div className="settings-tab-panel">
-            <h3 className="profile-section-title">Appearance</h3>
+      {activeTab === 'appearance' && (
+        <div className="settings-appearance-stack">
+          <section className="profile-card profile-form-card settings-page__card">
+            <h3 className="profile-section-title">Display mode</h3>
             <p className="profile-page__subtitle" style={{ marginBottom: 18 }}>
-              Choose how ParaShop+ looks. Your choice is saved on this device.
+              Switch between light and dark. Saved on this device.
             </p>
 
             <div className="settings-theme-grid">
@@ -311,10 +314,10 @@ export function SettingsPage() {
                 );
               })}
             </div>
+          </section>
 
-            <h3 className="profile-section-title settings-accent-title">
-              Theme color
-            </h3>
+          <section className="profile-card profile-form-card settings-page__card">
+            <h3 className="profile-section-title">Theme color</h3>
             <p className="profile-page__subtitle" style={{ marginBottom: 18 }}>
               Buttons, links, borders, and accents follow this color across the
               site.
@@ -345,10 +348,46 @@ export function SettingsPage() {
                 );
               })}
             </div>
-          </div>
-        )}
 
-        {activeTab === 'security' && (
+            <div className="settings-intensity">
+              <div className="settings-intensity__head">
+                <div>
+                  <h3 className="profile-section-title settings-accent-title">
+                    Color intensity
+                  </h3>
+                  <p className="profile-page__subtitle">
+                    Soft and muted on the left, stronger and more vivid on the
+                    right.
+                  </p>
+                </div>
+                <span className="settings-intensity__value">
+                  {accentIntensity}%
+                </span>
+              </div>
+
+              <div className="settings-intensity__slider-row">
+                <span>Soft</span>
+                <input
+                  type="range"
+                  className="settings-intensity__slider"
+                  min={0}
+                  max={100}
+                  step={1}
+                  value={accentIntensity}
+                  onChange={(event) =>
+                    setAccentIntensity(Number(event.target.value))
+                  }
+                  aria-label="Color intensity"
+                />
+                <span>Strong</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {activeTab === 'security' && (
+        <section className="profile-card profile-form-card settings-page__card">
           <div className="profile-security">
             <section className="profile-security__block">
               <button
@@ -588,9 +627,11 @@ export function SettingsPage() {
               )}
             </section>
           </div>
-        )}
+        </section>
+      )}
 
-        {activeTab === 'personal' && (
+      {activeTab === 'personal' && (
+        <section className="profile-card profile-form-card settings-page__card">
           <div className="settings-tab-panel">
             <div className="profile-form__toolbar">
               <h3 className="profile-section-title" style={{ margin: 0 }}>
@@ -828,8 +869,8 @@ export function SettingsPage() {
               <p className="admin-validations__intro">You are not signed in.</p>
             )}
           </div>
-        )}
-      </section>
+        </section>
+      )}
     </div>
   );
 }

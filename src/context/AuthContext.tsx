@@ -13,6 +13,7 @@ import {
   registerClient,
   registerCompany,
   updateProfile as updateProfileRequest,
+  verifyTwoFactorLogin as verifyTwoFactorLoginRequest,
 } from '../services/auth.service';
 import type {
   AuthUser,
@@ -35,11 +36,20 @@ interface AuthContextValue {
   user: AuthUser | null;
   token: string | null;
   isAuthenticated: boolean;
-  login: (payload: LoginPayload, rememberMe?: boolean) => Promise<string>;
+  login: (
+    payload: LoginPayload,
+    rememberMe?: boolean,
+  ) => Promise<string | { requiresTwoFactor: true; tempToken: string }>;
+  completeTwoFactorLogin: (
+    tempToken: string,
+    code: string,
+    rememberMe?: boolean,
+  ) => Promise<string>;
   registerAsClient: (payload: RegisterClientPayload) => Promise<string>;
   registerAsCompany: (payload: RegisterCompanyPayload) => Promise<string>;
   updateProfile: (payload: UpdateProfilePayload) => Promise<AuthUser>;
   refreshProfile: () => Promise<AuthUser | null>;
+  setUserFromProfile: (profile: AuthUser) => void;
   logout: () => void;
 }
 
@@ -68,6 +78,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(
     async (payload: LoginPayload, rememberMe = false) => {
       const response = await loginRequest(payload);
+      if ('requiresTwoFactor' in response && response.requiresTwoFactor) {
+        return {
+          requiresTwoFactor: true as const,
+          tempToken: response.tempToken,
+        };
+      }
+      return applyAuth(response.accessToken, response.user, rememberMe);
+    },
+    [applyAuth],
+  );
+
+  const completeTwoFactorLogin = useCallback(
+    async (tempToken: string, code: string, rememberMe = false) => {
+      const response = await verifyTwoFactorLoginRequest(tempToken, code);
       return applyAuth(response.accessToken, response.user, rememberMe);
     },
     [applyAuth],
@@ -94,6 +118,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     saveStoredUser(updated);
     setUser(updated);
     return updated;
+  }, []);
+
+  const setUserFromProfile = useCallback((profile: AuthUser) => {
+    saveStoredUser(profile);
+    setUser(profile);
   }, []);
 
   const refreshProfile = useCallback(async () => {
@@ -162,20 +191,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       token,
       isAuthenticated: Boolean(token && user),
       login,
+      completeTwoFactorLogin,
       registerAsClient,
       registerAsCompany,
       updateProfile,
       refreshProfile,
+      setUserFromProfile,
       logout,
     }),
     [
       user,
       token,
       login,
+      completeTwoFactorLogin,
       registerAsClient,
       registerAsCompany,
       updateProfile,
       refreshProfile,
+      setUserFromProfile,
       logout,
     ],
   );

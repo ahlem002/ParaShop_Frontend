@@ -39,7 +39,6 @@ export function AdminSidebar() {
           alt="ParaShop+"
           className="admin-sidebar__logo"
         />
-        <p className="admin-sidebar__subtitle">Admin Panel</p>
       </div>
 
       <nav className="admin-sidebar__nav">

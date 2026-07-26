@@ -26,6 +26,7 @@ export interface AuthUser {
   address?: string | null;
   profileImage?: string | null;
   createdAt?: string | null;
+  twoFactorEnabled?: boolean;
   company?: AuthCompanyProfile | null;
 }
 
@@ -33,6 +34,10 @@ export interface AuthResponse {
   accessToken: string;
   user: AuthUser;
 }
+
+export type LoginResult =
+  | AuthResponse
+  | { requiresTwoFactor: true; tempToken: string };
 
 export interface RegisterClientPayload {
   firstName: string;

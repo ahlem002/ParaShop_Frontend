@@ -21,6 +21,11 @@ body:has(.admin-layout) {
   display: flex;
   flex-direction: column;
   padding: 28px 20px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
 }
 
 .admin-sidebar__brand {
@@ -30,7 +35,8 @@ body:has(.admin-layout) {
   gap: 10px;
   padding: 0 8px 28px;
   border-bottom: 1px solid var(--sidebar-admin-border);
-  margin-bottom: 28px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
 }
 
 .admin-sidebar__logo {
@@ -52,6 +58,10 @@ body:has(.admin-layout) {
   flex-direction: column;
   gap: 8px;
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-bottom: 12px;
 }
 
 .admin-sidebar__link {
@@ -92,9 +102,10 @@ body:has(.admin-layout) {
 }
 
 .admin-sidebar__account {
-  padding: 20px 8px 0;
+  padding: 16px 8px 0;
   border-top: 1px solid var(--sidebar-admin-border);
-  margin-top: 28px;
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 .admin-sidebar__user {
@@ -918,11 +929,19 @@ body:has(.admin-layout) {
   .admin-sidebar {
     width: 100%;
     padding: 20px 16px;
+    position: relative;
+    top: auto;
+    height: auto;
+    max-height: none;
+    overflow: visible;
   }
 
   .admin-sidebar__nav {
     flex-direction: row;
     flex-wrap: wrap;
+    overflow: visible;
+    min-height: auto;
+    margin-bottom: 0;
   }
 
   .admin-sidebar__link {

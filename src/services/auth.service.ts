@@ -49,9 +49,49 @@ export function registerCompany(payload: RegisterCompanyPayload) {
 }
 
 export function login(payload: LoginPayload) {
-  return apiFetch<AuthResponse>('/auth/login', {
+  return apiFetch<
+    AuthResponse | { requiresTwoFactor: true; tempToken: string }
+  >('/auth/login', {
     method: 'POST',
     body: JSON.stringify(payload),
+  });
+}
+
+export function verifyTwoFactorLogin(tempToken: string, code: string) {
+  return apiFetch<AuthResponse>('/auth/2fa/verify-login', {
+    method: 'POST',
+    body: JSON.stringify({ tempToken, code }),
+  });
+}
+
+export function changePassword(currentPassword: string, newPassword: string) {
+  return authFetch<{ message: string }>('/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+}
+
+export function setupTwoFactor() {
+  return authFetch<{
+    secret: string;
+    otpauthUrl: string;
+    qrCodeUrl: string;
+  }>('/auth/2fa/setup', {
+    method: 'POST',
+  });
+}
+
+export function enableTwoFactor(code: string) {
+  return authFetch<AuthUser>('/auth/2fa/enable', {
+    method: 'POST',
+    body: JSON.stringify({ code }),
+  });
+}
+
+export function disableTwoFactor(password: string, code: string) {
+  return authFetch<AuthUser>('/auth/2fa/disable', {
+    method: 'POST',
+    body: JSON.stringify({ password, code }),
   });
 }
 

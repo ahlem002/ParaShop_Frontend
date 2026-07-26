@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import {
   Calendar,
   Camera,
+  ChevronDown,
   Heart,
   Mail,
   MapPin,
@@ -12,6 +13,12 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { resolveUploadUrl } from '../config/api';
+import {
+  changePassword,
+  disableTwoFactor,
+  enableTwoFactor,
+  setupTwoFactor,
+} from '../services/auth.service';
 import '../styles/pages/auth.css';
 import '../styles/pages/profile.css';
 
@@ -99,7 +106,7 @@ function profileToForm(profile: {
 }
 
 export function ProfilePage() {
-  const { user, updateProfile, refreshProfile } = useAuth();
+  const { user, updateProfile, refreshProfile, setUserFromProfile } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -109,6 +116,26 @@ export function ProfilePage() {
   const [activeTab, setActiveTab] = useState<ProfileTab>('personal');
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [passwordOpen, setPasswordOpen] = useState(false);
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+
+  const [twoFactorSetup, setTwoFactorSetup] = useState<{
+    secret: string;
+    qrCodeUrl: string;
+  } | null>(null);
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [twoFactorPassword, setTwoFactorPassword] = useState('');
+  const [twoFactorBusy, setTwoFactorBusy] = useState(false);
+  const [twoFactorError, setTwoFactorError] = useState('');
+  const [twoFactorSuccess, setTwoFactorSuccess] = useState('');
 
   const [form, setForm] = useState(() =>
     user ? profileToForm(user) : profileToForm({}),
@@ -168,6 +195,107 @@ export function ProfilePage() {
     setEditing(false);
     setError('');
     setSuccess('');
+  }
+
+  async function handlePasswordSubmit(event: FormEvent) {
+    event.preventDefault();
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError('New passwords do not match.');
+      return;
+    }
+
+    setPasswordSaving(true);
+    try {
+      await changePassword(
+        passwordForm.currentPassword,
+        passwordForm.newPassword,
+      );
+      setPasswordForm({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
+      setPasswordSuccess('Password updated successfully.');
+    } catch (err) {
+      setPasswordError(
+        err instanceof Error ? err.message : 'Could not update password.',
+      );
+    } finally {
+      setPasswordSaving(false);
+    }
+  }
+
+  async function handleStartTwoFactor() {
+    setTwoFactorError('');
+    setTwoFactorSuccess('');
+    setTwoFactorBusy(true);
+    try {
+      const setup = await setupTwoFactor();
+      setTwoFactorSetup({
+        secret: setup.secret,
+        qrCodeUrl: setup.qrCodeUrl,
+      });
+      setTwoFactorCode('');
+    } catch (err) {
+      setTwoFactorError(
+        err instanceof Error
+          ? err.message
+          : 'Could not start two-factor setup.',
+      );
+    } finally {
+      setTwoFactorBusy(false);
+    }
+  }
+
+  async function handleEnableTwoFactor(event: FormEvent) {
+    event.preventDefault();
+    setTwoFactorError('');
+    setTwoFactorSuccess('');
+    setTwoFactorBusy(true);
+    try {
+      const updated = await enableTwoFactor(twoFactorCode);
+      setUserFromProfile(updated);
+      setTwoFactorSetup(null);
+      setTwoFactorCode('');
+      setTwoFactorSuccess('Two-step verification is now enabled.');
+    } catch (err) {
+      setTwoFactorError(
+        err instanceof Error
+          ? err.message
+          : 'Could not enable two-factor authentication.',
+      );
+    } finally {
+      setTwoFactorBusy(false);
+    }
+  }
+
+  async function handleDisableTwoFactor(event: FormEvent) {
+    event.preventDefault();
+    setTwoFactorError('');
+    setTwoFactorSuccess('');
+    setTwoFactorBusy(true);
+    try {
+      const updated = await disableTwoFactor(
+        twoFactorPassword,
+        twoFactorCode,
+      );
+      setUserFromProfile(updated);
+      setTwoFactorPassword('');
+      setTwoFactorCode('');
+      setTwoFactorSetup(null);
+      setTwoFactorSuccess('Two-step verification has been disabled.');
+    } catch (err) {
+      setTwoFactorError(
+        err instanceof Error
+          ? err.message
+          : 'Could not disable two-factor authentication.',
+      );
+    } finally {
+      setTwoFactorBusy(false);
+    }
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -579,19 +707,241 @@ export function ProfilePage() {
             )}
 
             {activeTab === 'security' && (
-              <div className="profile-tab-placeholder">
-                <h3>Security</h3>
-                <p>
-                  Password and security settings will be available here soon.
-                </p>
-                <div className="profile-placeholder-row">
-                  <span>Password</span>
-                  <span>••••••••</span>
-                </div>
-                <div className="profile-placeholder-row">
-                  <span>Two-factor authentication</span>
-                  <span>Not enabled</span>
-                </div>
+              <div className="profile-security">
+                <section className="profile-security__block">
+                  <button
+                    type="button"
+                    className={`profile-security__toggle${passwordOpen ? ' is-open' : ''}`}
+                    onClick={() => setPasswordOpen((open) => !open)}
+                    aria-expanded={passwordOpen}
+                  >
+                    <span>
+                      <h3>Change password</h3>
+                      <p>Use a strong password you do not reuse elsewhere.</p>
+                    </span>
+                    <ChevronDown size={20} className="profile-security__chevron" />
+                  </button>
+
+                  {passwordOpen && (
+                    <>
+                      {passwordError && (
+                        <div className="profile-alert profile-alert--error">
+                          {passwordError}
+                        </div>
+                      )}
+                      {passwordSuccess && (
+                        <div className="profile-alert profile-alert--success">
+                          {passwordSuccess}
+                        </div>
+                      )}
+                      <form className="profile-form" onSubmit={handlePasswordSubmit}>
+                        <div className="form-group">
+                          <label htmlFor="currentPassword">Current password</label>
+                          <input
+                            id="currentPassword"
+                            type="password"
+                            value={passwordForm.currentPassword}
+                            onChange={(e) =>
+                              setPasswordForm({
+                                ...passwordForm,
+                                currentPassword: e.target.value,
+                              })
+                            }
+                            minLength={8}
+                            required
+                          />
+                        </div>
+                        <div className="profile-form__grid">
+                          <div className="form-group">
+                            <label htmlFor="newPassword">New password</label>
+                            <input
+                              id="newPassword"
+                              type="password"
+                              value={passwordForm.newPassword}
+                              onChange={(e) =>
+                                setPasswordForm({
+                                  ...passwordForm,
+                                  newPassword: e.target.value,
+                                })
+                              }
+                              minLength={8}
+                              required
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="confirmPassword">Confirm password</label>
+                            <input
+                              id="confirmPassword"
+                              type="password"
+                              value={passwordForm.confirmPassword}
+                              onChange={(e) =>
+                                setPasswordForm({
+                                  ...passwordForm,
+                                  confirmPassword: e.target.value,
+                                })
+                              }
+                              minLength={8}
+                              required
+                            />
+                          </div>
+                        </div>
+                        <button
+                          type="submit"
+                          className="btn btn-primary"
+                          disabled={passwordSaving}
+                        >
+                          {passwordSaving ? 'Updating...' : 'Update password'}
+                        </button>
+                      </form>
+                    </>
+                  )}
+                </section>
+
+                <section className="profile-security__block">
+                  <h3>Two-step verification</h3>
+                  <p>
+                    Protect your account with a code from an authenticator app
+                    (Google Authenticator, Microsoft Authenticator, etc.).
+                  </p>
+                  {twoFactorError && (
+                    <div className="profile-alert profile-alert--error">
+                      {twoFactorError}
+                    </div>
+                  )}
+                  {twoFactorSuccess && (
+                    <div className="profile-alert profile-alert--success">
+                      {twoFactorSuccess}
+                    </div>
+                  )}
+
+                  <div className="profile-placeholder-row">
+                    <span>Status</span>
+                    <span>
+                      {user.twoFactorEnabled ? 'Enabled' : 'Not enabled'}
+                    </span>
+                  </div>
+
+                  {!user.twoFactorEnabled && !twoFactorSetup && (
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={handleStartTwoFactor}
+                      disabled={twoFactorBusy}
+                    >
+                      {twoFactorBusy ? 'Preparing...' : 'Enable two-step verification'}
+                    </button>
+                  )}
+
+                  {!user.twoFactorEnabled && twoFactorSetup && (
+                    <form
+                      className="profile-form"
+                      onSubmit={handleEnableTwoFactor}
+                    >
+                      <p>
+                        Scan this QR code with your authenticator app, or enter
+                        the secret manually.
+                      </p>
+                      <div className="profile-2fa-qr">
+                        <img
+                          src={twoFactorSetup.qrCodeUrl}
+                          alt="Two-factor QR code"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Secret key</label>
+                        <input value={twoFactorSetup.secret} readOnly />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="enable2faCode">Authentication code</label>
+                        <input
+                          id="enable2faCode"
+                          inputMode="numeric"
+                          maxLength={6}
+                          value={twoFactorCode}
+                          onChange={(e) =>
+                            setTwoFactorCode(
+                              e.target.value.replace(/\D/g, '').slice(0, 6),
+                            )
+                          }
+                          placeholder="123456"
+                          required
+                        />
+                      </div>
+                      <div className="profile-form__actions-inline">
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          onClick={() => {
+                            setTwoFactorSetup(null);
+                            setTwoFactorCode('');
+                          }}
+                          disabled={twoFactorBusy}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="btn btn-primary"
+                          disabled={twoFactorBusy}
+                        >
+                          {twoFactorBusy ? 'Enabling...' : 'Confirm and enable'}
+                        </button>
+                      </div>
+                    </form>
+                  )}
+
+                  {user.twoFactorEnabled && (
+                    <form
+                      className="profile-form"
+                      onSubmit={handleDisableTwoFactor}
+                    >
+                      <p>
+                        To disable two-step verification, confirm your password
+                        and a current authenticator code.
+                      </p>
+                      <div className="form-group">
+                        <label htmlFor="disable2faPassword">Password</label>
+                        <input
+                          id="disable2faPassword"
+                          type="password"
+                          value={twoFactorPassword}
+                          onChange={(e) =>
+                            setTwoFactorPassword(e.target.value)
+                          }
+                          minLength={8}
+                          required
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="disable2faCode">
+                          Authentication code
+                        </label>
+                        <input
+                          id="disable2faCode"
+                          inputMode="numeric"
+                          maxLength={6}
+                          value={twoFactorCode}
+                          onChange={(e) =>
+                            setTwoFactorCode(
+                              e.target.value.replace(/\D/g, '').slice(0, 6),
+                            )
+                          }
+                          placeholder="123456"
+                          required
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className="btn btn-secondary"
+                        disabled={twoFactorBusy}
+                      >
+                        {twoFactorBusy
+                          ? 'Disabling...'
+                          : 'Disable two-step verification'}
+                      </button>
+                    </form>
+                  )}
+                </section>
               </div>
             )}
 

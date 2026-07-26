@@ -1,11 +1,12 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, LogOut, Package, Settings } from 'lucide-react';
+import { Bell, LayoutDashboard, LogOut, Package, Settings } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { ThemeToggle } from '../layout/ThemeToggle';
 
 const navItems = [
   { label: 'Dashboard', to: '/company', icon: LayoutDashboard },
   { label: 'Product Management', to: '/company/products', icon: Package },
+  { label: 'Notifications', to: '/company/notifications', icon: Bell },
   { label: 'Settings', to: '/company/settings', icon: Settings },
 ];
 

@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
+  Bell,
   Building2,
   ClipboardCheck,
   LayoutDashboard,
@@ -19,6 +20,7 @@ const navItems = [
   { label: 'User Management', to: '/admin/users', icon: UserCog },
   { label: 'Client Management', to: '/admin/clients', icon: Users },
   { label: 'Company Management', to: '/admin/companies', icon: Building2 },
+  { label: 'Notifications', to: '/admin/notifications', icon: Bell },
   { label: 'Settings', to: '/admin/settings', icon: Settings },
 ];
 

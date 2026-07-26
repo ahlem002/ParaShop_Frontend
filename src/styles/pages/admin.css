@@ -1,6 +1,8 @@
 .admin-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
   background: var(--bg-very-light);
   font-family: 'Inter', sans-serif;
 }
@@ -9,6 +11,8 @@
 body:has(.admin-layout) {
   padding-bottom: 0;
   background-color: var(--bg-very-light);
+  overflow: hidden;
+  height: 100vh;
 }
 
 /* ── Sidebar ── */
@@ -21,8 +25,6 @@ body:has(.admin-layout) {
   display: flex;
   flex-direction: column;
   padding: 28px 20px;
-  position: sticky;
-  top: 0;
   height: 100vh;
   max-height: 100vh;
   overflow: hidden;
@@ -146,6 +148,10 @@ body:has(.admin-layout) {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
   gap: 16px;
   padding: 16px 16px 16px 0;
 }
@@ -163,6 +169,7 @@ body:has(.admin-layout) {
   gap: 16px;
   flex-shrink: 0;
   margin-left: 16px;
+  z-index: 2;
 }
 
 .admin-header__brand {
@@ -179,8 +186,10 @@ body:has(.admin-layout) {
 
 .admin-content {
   flex: 1;
+  min-height: 0;
   padding: 20px 24px 8px 32px;
   overflow-x: auto;
+  overflow-y: auto;
 }
 
 .admin-page-title {
@@ -924,6 +933,14 @@ body:has(.admin-layout) {
 @media (max-width: 900px) {
   .admin-layout {
     flex-direction: column;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  body:has(.admin-layout) {
+    overflow: auto;
+    height: auto;
   }
 
   .admin-sidebar {
@@ -952,6 +969,9 @@ body:has(.admin-layout) {
   .admin-main {
     padding: 12px;
     gap: 12px;
+    height: auto;
+    max-height: none;
+    overflow: visible;
   }
 
   .admin-header {
@@ -962,6 +982,7 @@ body:has(.admin-layout) {
 
   .admin-content {
     padding: 12px 4px;
+    overflow: visible;
   }
 
   .admin-page-title {

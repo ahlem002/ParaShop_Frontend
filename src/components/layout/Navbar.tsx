@@ -3,6 +3,8 @@ import { useAuth } from '../../context/AuthContext';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 import { NavAvatar } from './NavAvatar';
+import { NotificationBell } from '../notifications/NotificationBell';
+import '../../styles/pages/notifications.css';
 
 const navLinks = [
   { label: 'Home', to: '/' },
@@ -35,18 +37,27 @@ export function Navbar() {
           </NavLink>
         ))}
         {isAuthenticated && user?.role === 'CLIENT' && (
-          <NavLink
-            to="/settings"
-            className={({ isActive }) => (isActive ? 'active' : undefined)}
-          >
-            Settings
-          </NavLink>
+          <>
+            <NavLink
+              to="/notifications"
+              className={({ isActive }) => (isActive ? 'active' : undefined)}
+            >
+              Notifications
+            </NavLink>
+            <NavLink
+              to="/settings"
+              className={({ isActive }) => (isActive ? 'active' : undefined)}
+            >
+              Settings
+            </NavLink>
+          </>
         )}
       </nav>
       <div className="nav-auth">
         <ThemeToggle />
         {isAuthenticated && user ? (
           <>
+            <NotificationBell />
             <NavAvatar />
             <button
               type="button"

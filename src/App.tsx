@@ -22,6 +22,9 @@ import { AdminProductValidationsPage } from './pages/admin/AdminProductValidatio
 import { AdminUsersPage } from './pages/admin/AdminUsersPage';
 import { AdminClientsPage } from './pages/admin/AdminClientsPage';
 import { AdminCompaniesPage } from './pages/admin/AdminCompaniesPage';
+import { AdminRevenuePage } from './pages/admin/AdminRevenuePage';
+import { AdminCampaignsPage } from './pages/admin/AdminCampaignsPage';
+import { AdminAnalyticsPage } from './pages/admin/AdminAnalyticsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { PublicSettingsPage } from './pages/PublicSettingsPage';
 import { ProfilePage } from './pages/ProfilePage';
@@ -110,6 +113,9 @@ function App() {
                 <Route path="users" element={<AdminUsersPage />} />
                 <Route path="clients" element={<AdminClientsPage />} />
                 <Route path="companies" element={<AdminCompaniesPage />} />
+                <Route path="revenue" element={<AdminRevenuePage />} />
+                <Route path="campaigns" element={<AdminCampaignsPage />} />
+                <Route path="analytics" element={<AdminAnalyticsPage />} />
                 <Route path="notifications" element={<NotificationsPage />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="settings" element={<SettingsPage />} />

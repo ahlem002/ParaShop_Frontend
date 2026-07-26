@@ -71,3 +71,51 @@ export interface AdminProduct {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface AdminDashboardStats {
+  users: {
+    total: number;
+    clients: number;
+    companies: number;
+    admins: number;
+    active: number;
+    blocked: number;
+  };
+  companies: {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+  };
+  products: {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+  };
+  catalog: {
+    approvedProductValue: number;
+    totalStockUnits: number;
+  };
+  charts: {
+    activityLast7Days: Array<{
+      date: string;
+      label: string;
+      users: number;
+      products: number;
+    }>;
+  };
+  recent: {
+    pendingCompanies: Array<{
+      companyId: string;
+      companyName: string;
+      createdAt: string;
+    }>;
+    pendingProducts: Array<{
+      productId: string;
+      name: string;
+      companyName: string;
+      createdAt: string;
+    }>;
+  };
+}

@@ -1,12 +1,15 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
+  BarChart3,
   Bell,
   Building2,
   ClipboardCheck,
   LayoutDashboard,
   LogOut,
+  Megaphone,
   PackageCheck,
   Settings,
+  TrendingUp,
   UserCog,
   Users,
 } from 'lucide-react';
@@ -20,6 +23,9 @@ const navItems = [
   { label: 'User Management', to: '/admin/users', icon: UserCog },
   { label: 'Client Management', to: '/admin/clients', icon: Users },
   { label: 'Company Management', to: '/admin/companies', icon: Building2 },
+  { label: 'Revenue', to: '/admin/revenue', icon: TrendingUp },
+  { label: 'Campaigns', to: '/admin/campaigns', icon: Megaphone },
+  { label: 'Analytics', to: '/admin/analytics', icon: BarChart3 },
   { label: 'Notifications', to: '/admin/notifications', icon: Bell },
   { label: 'Settings', to: '/admin/settings', icon: Settings },
 ];

@@ -2,10 +2,15 @@ import { authFetch } from '../config/api';
 import type {
   AdminClient,
   AdminCompany,
+  AdminDashboardStats,
   AdminProduct,
   AdminUser,
   UserAccountStatus,
 } from '../types/admin';
+
+export function getAdminDashboard() {
+  return authFetch<AdminDashboardStats>('/admin/dashboard');
+}
 
 export function getAdminUsers() {
   return authFetch<AdminUser[]>('/admin/users');

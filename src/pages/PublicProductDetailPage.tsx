@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Navbar } from '../components/layout/Navbar';
+import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import type { PublicProduct } from '../types/product';
 import { getPublicProduct } from '../services/products.service';
 import { resolveUploadUrl } from '../config/api';
 import '../styles/pages/home.css';
 import '../styles/pages/auth.css';
+import '../styles/pages/cart.css';
 
 function formatPrice(value: number | string) {
   return `${Number(value).toFixed(2)} TND`;
@@ -13,10 +16,19 @@ function formatPrice(value: number | string) {
 
 export function PublicProductDetailPage() {
   const { productId } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
+  const { addItem } = useCart();
   const [product, setProduct] = useState<PublicProduct | null>(null);
   const [activeImage, setActiveImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [feedback, setFeedback] = useState<{
+    type: 'ok' | 'error';
+    text: string;
+  } | null>(null);
 
   const loadProduct = useCallback(async () => {
     if (!productId) return;
@@ -28,6 +40,7 @@ export function PublicProductDetailPage() {
       const data = await getPublicProduct(productId);
       setProduct(data);
       setActiveImage(0);
+      setQuantity(1);
     } catch {
       setError('Product not found or not available.');
     } finally {
@@ -45,6 +58,49 @@ export function PublicProductDetailPage() {
       .filter((url): url is string => Boolean(url)) ?? [];
 
   const mainImage = images[activeImage] ?? images[0] ?? null;
+  const maxQty = Math.max(1, product?.stock ?? 1);
+  const outOfStock = (product?.stock ?? 0) < 1;
+
+  function requireClientLogin() {
+    if (!isAuthenticated || user?.role !== 'CLIENT') {
+      navigate(`/login?redirect=${encodeURIComponent(`/products/${productId}`)}`);
+      return false;
+    }
+    return true;
+  }
+
+  async function handleAddToCart() {
+    if (!product || !requireClientLogin()) return;
+    setBusy(true);
+    setFeedback(null);
+    try {
+      await addItem(product.productId, quantity);
+      setFeedback({ type: 'ok', text: 'Added to cart.' });
+    } catch (err) {
+      setFeedback({
+        type: 'error',
+        text: err instanceof Error ? err.message : 'Could not add to cart',
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleBuyNow() {
+    if (!product || !requireClientLogin()) return;
+    setBusy(true);
+    setFeedback(null);
+    try {
+      await addItem(product.productId, quantity);
+      navigate('/cart');
+    } catch (err) {
+      setFeedback({
+        type: 'error',
+        text: err instanceof Error ? err.message : 'Could not add to cart',
+      });
+      setBusy(false);
+    }
+  }
 
   return (
     <>
@@ -129,12 +185,57 @@ export function PublicProductDetailPage() {
                 </div>
               )}
 
-              <div className="hero-buttons" style={{ marginTop: 28 }}>
+              <div className="product-buy-actions">
+                <div className="qty-field">
+                  <label htmlFor="product-qty">Qty</label>
+                  <input
+                    id="product-qty"
+                    type="number"
+                    min={1}
+                    max={maxQty}
+                    value={quantity}
+                    disabled={outOfStock || busy}
+                    onChange={(event) => {
+                      const next = Number(event.target.value) || 1;
+                      setQuantity(Math.min(maxQty, Math.max(1, next)));
+                    }}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  disabled={outOfStock || busy}
+                  onClick={() => void handleAddToCart()}
+                >
+                  Add to cart
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  disabled={outOfStock || busy}
+                  onClick={() => void handleBuyNow()}
+                >
+                  Buy now
+                </button>
+              </div>
+
+              {outOfStock && (
+                <p className="product-buy-feedback is-error">Out of stock</p>
+              )}
+              {feedback && (
+                <p
+                  className={`product-buy-feedback is-${feedback.type}`}
+                >
+                  {feedback.text}{' '}
+                  {feedback.type === 'ok' && (
+                    <Link to="/cart">View cart</Link>
+                  )}
+                </p>
+              )}
+
+              <div className="hero-buttons" style={{ marginTop: 20 }}>
                 <Link to="/products" className="btn btn-secondary">
                   Back to products
-                </Link>
-                <Link to="/" className="btn btn-primary">
-                  Home
                 </Link>
               </div>
             </div>

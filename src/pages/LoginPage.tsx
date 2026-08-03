@@ -1,11 +1,22 @@
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Navbar } from '../components/layout/Navbar';
 import { useAuth } from '../context/AuthContext';
 import '../styles/pages/auth.css';
 
+function resolveRedirect(
+  defaultPath: string,
+  redirect: string | null,
+): string {
+  if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')) {
+    return defaultPath;
+  }
+  return redirect;
+}
+
 export function LoginPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login, completeTwoFactorLogin } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,6 +25,7 @@ export function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tempToken, setTempToken] = useState<string | null>(null);
   const [twoFactorCode, setTwoFactorCode] = useState('');
+  const redirectParam = searchParams.get('redirect');
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -27,7 +39,7 @@ export function LoginPage() {
           twoFactorCode,
           rememberMe,
         );
-        navigate(redirectPath);
+        navigate(resolveRedirect(redirectPath, redirectParam));
         return;
       }
 
@@ -38,7 +50,7 @@ export function LoginPage() {
         return;
       }
 
-      navigate(result);
+      navigate(resolveRedirect(result, redirectParam));
     } catch (err) {
       setError(
         err instanceof Error

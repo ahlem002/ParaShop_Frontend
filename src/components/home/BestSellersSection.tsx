@@ -41,7 +41,7 @@ export function BestSellersSection() {
   return (
     <section className="best-sellers" id="best-sellers">
       <div className="section-header">
-        <h2>Best sellers</h2>
+        <h2>Popular products</h2>
         <Link to="/products" className="view-all">
           View all
         </Link>

@@ -2,12 +2,14 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { NotificationsProvider } from './context/NotificationsContext';
+import { CartProvider } from './context/CartContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { AdminLayout } from './components/admin/AdminLayout';
 import { CompanyLayout } from './components/company/CompanyLayout';
 import { HomePage } from './pages/HomePage';
 import { ProductsPage } from './pages/ProductsPage';
 import { PublicProductDetailPage } from './pages/PublicProductDetailPage';
+import { CartPage } from './pages/CartPage';
 import { LoginPage } from './pages/LoginPage';
 import { SignUpPage } from './pages/SignUpPage';
 import { CompanySignUpPage } from './pages/CompanySignUpPage';
@@ -37,92 +39,102 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
         <NotificationsProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/products" element={<ProductsPage />} />
-              <Route
-                path="/products/:productId"
-                element={<PublicProductDetailPage />}
-              />
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute allowedRoles={['CLIENT']}>
-                    <PublicProfilePage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/settings"
-                element={
-                  <ProtectedRoute allowedRoles={['CLIENT']}>
-                    <PublicSettingsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/notifications"
-                element={
-                  <ProtectedRoute allowedRoles={['CLIENT']}>
-                    <PublicNotificationsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignUpPage />} />
-              <Route path="/signup/company" element={<CompanySignUpPage />} />
-              <Route path="/company/pending" element={<CompanyPendingPage />} />
-              <Route
-                path="/company"
-                element={
-                  <ProtectedRoute allowedRoles={['COMPANY']}>
-                    <CompanyLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<CompanyDashboardHomePage />} />
-                <Route path="products" element={<CompanyProductsPage />} />
-                <Route path="products/new" element={<CompanyProductFormPage />} />
+          <CartProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/products" element={<ProductsPage />} />
                 <Route
-                  path="products/:productId"
-                  element={<CompanyProductDetailPage />}
+                  path="/products/:productId"
+                  element={<PublicProductDetailPage />}
                 />
                 <Route
-                  path="products/:productId/edit"
-                  element={<CompanyProductFormPage />}
+                  path="/cart"
+                  element={
+                    <ProtectedRoute allowedRoles={['CLIENT']}>
+                      <CartPage />
+                    </ProtectedRoute>
+                  }
                 />
-                <Route path="notifications" element={<NotificationsPage />} />
-                <Route path="profile" element={<ProfilePage />} />
-                <Route path="settings" element={<SettingsPage />} />
-              </Route>
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute allowedRoles={['ADMIN']}>
-                    <AdminLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<AdminDashboardHomePage />} />
-                <Route path="validations" element={<AdminValidationsPage />} />
                 <Route
-                  path="product-validations"
-                  element={<AdminProductValidationsPage />}
+                  path="/profile"
+                  element={
+                    <ProtectedRoute allowedRoles={['CLIENT']}>
+                      <PublicProfilePage />
+                    </ProtectedRoute>
+                  }
                 />
-                <Route path="users" element={<AdminUsersPage />} />
-                <Route path="clients" element={<AdminClientsPage />} />
-                <Route path="companies" element={<AdminCompaniesPage />} />
-                <Route path="revenue" element={<AdminRevenuePage />} />
-                <Route path="campaigns" element={<AdminCampaignsPage />} />
-                <Route path="analytics" element={<AdminAnalyticsPage />} />
-                <Route path="notifications" element={<NotificationsPage />} />
-                <Route path="profile" element={<ProfilePage />} />
-                <Route path="settings" element={<SettingsPage />} />
-              </Route>
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </BrowserRouter>
+                <Route
+                  path="/settings"
+                  element={
+                    <ProtectedRoute allowedRoles={['CLIENT']}>
+                      <PublicSettingsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/notifications"
+                  element={
+                    <ProtectedRoute allowedRoles={['CLIENT']}>
+                      <PublicNotificationsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/signup/company" element={<CompanySignUpPage />} />
+                <Route path="/company/pending" element={<CompanyPendingPage />} />
+                <Route
+                  path="/company"
+                  element={
+                    <ProtectedRoute allowedRoles={['COMPANY']}>
+                      <CompanyLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<CompanyDashboardHomePage />} />
+                  <Route path="products" element={<CompanyProductsPage />} />
+                  <Route path="products/new" element={<CompanyProductFormPage />} />
+                  <Route
+                    path="products/:productId"
+                    element={<CompanyProductDetailPage />}
+                  />
+                  <Route
+                    path="products/:productId/edit"
+                    element={<CompanyProductFormPage />}
+                  />
+                  <Route path="notifications" element={<NotificationsPage />} />
+                  <Route path="profile" element={<ProfilePage />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                </Route>
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute allowedRoles={['ADMIN']}>
+                      <AdminLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<AdminDashboardHomePage />} />
+                  <Route path="validations" element={<AdminValidationsPage />} />
+                  <Route
+                    path="product-validations"
+                    element={<AdminProductValidationsPage />}
+                  />
+                  <Route path="users" element={<AdminUsersPage />} />
+                  <Route path="clients" element={<AdminClientsPage />} />
+                  <Route path="companies" element={<AdminCompaniesPage />} />
+                  <Route path="revenue" element={<AdminRevenuePage />} />
+                  <Route path="campaigns" element={<AdminCampaignsPage />} />
+                  <Route path="analytics" element={<AdminAnalyticsPage />} />
+                  <Route path="notifications" element={<NotificationsPage />} />
+                  <Route path="profile" element={<ProfilePage />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                </Route>
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </BrowserRouter>
+          </CartProvider>
         </NotificationsProvider>
       </AuthProvider>
     </ThemeProvider>

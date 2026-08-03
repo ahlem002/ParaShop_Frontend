@@ -11,7 +11,7 @@ export function CategoriesSection() {
           className="category-card"
         >
           <div className="category-icon">
-            <Icon size={24} strokeWidth={2} />
+            <Icon size={26} strokeWidth={1.5} />
           </div>
           <span className="category-name">{name}</span>
         </Link>

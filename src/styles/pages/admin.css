@@ -4,7 +4,7 @@
   max-height: 100vh;
   overflow: hidden;
   background: var(--bg-very-light);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
 /* Cancel global body padding that leaves a white strip under the admin footer */
@@ -128,7 +128,7 @@ body:has(.admin-layout) {
   background: var(--white-cards);
   color: var(--text-secondary);
   border-radius: var(--radius-button);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
@@ -956,7 +956,7 @@ body:has(.admin-layout) {
 .admin-btn-sm {
   height: 38px;
   padding: 0 16px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-size: 14px;
   border-radius: 10px;
   font-weight: 600;
@@ -1117,7 +1117,7 @@ body:has(.admin-layout) {
   border: 1px solid var(--border-input);
   border-radius: var(--radius-input);
   background: var(--white-cards);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-size: 15px;
   color: var(--text-main);
   transition:
@@ -1141,7 +1141,7 @@ body:has(.admin-layout) {
   border: 1px solid var(--border-input);
   border-radius: var(--radius-input);
   background-color: var(--white-cards);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-size: 14px;
   font-weight: 500;
   color: var(--text-main);
@@ -1278,7 +1278,7 @@ body:has(.admin-layout) {
   border: 1px solid var(--border-input);
   background: var(--white-cards);
   color: var(--text-secondary);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;

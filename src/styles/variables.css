@@ -1,18 +1,18 @@
 :root {
   color-scheme: light;
 
-  /* Brand defaults — overridden live by ThemeContext intensity */
-  --primary-lavender: #b9a8ec;
-  --primary-hover: #9d8ad4;
-  --light-accent: #efe8fc;
-  --bg-very-light: #f8f8fa;
+  /* Brand defaults — overridden live by ThemeContext */
+  --primary-lavender: #5c4a8a;
+  --primary-hover: #4a3a72;
+  --light-accent: #f3f0f8;
+  --bg-very-light: #f7f7f9;
   --white-cards: #ffffff;
   --page-bg: #ffffff;
 
   /* Text Colors */
-  --text-main: #1f2937;
-  --text-secondary: #6b7280;
-  --text-disabled: #9ca3af;
+  --text-main: #1c2430;
+  --text-secondary: #5c6575;
+  --text-disabled: #9aa3b2;
 
   /* Status Colors */
   --success: #22c55e;
@@ -21,29 +21,29 @@
   --info: #3b82f6;
 
   /* Borders */
-  --border-input: #ececf0;
+  --border-input: #e8e8ee;
 
   /* Dashboard sidebars */
-  --sidebar-client: #9d8ad4;
-  --sidebar-company: #b9a8ec;
+  --sidebar-client: #4a3a72;
+  --sidebar-company: #5c4a8a;
   --sidebar-admin-bg: #ffffff;
-  --sidebar-admin-border: #ececf0;
-  --sidebar-admin-hover: #f8f8fa;
+  --sidebar-admin-border: #e8e8ee;
+  --sidebar-admin-hover: #f7f7f9;
 
   /* Component Border Radius */
-  --radius-button: 12px;
-  --radius-card: 16px;
+  --radius-button: 999px;
+  --radius-card: 20px;
   --radius-input: 12px;
-  --radius-image: 16px;
-  --radius-modal: 20px;
+  --radius-image: 18px;
+  --radius-modal: 24px;
 
   /* Shadows */
-  --soft-shadow: 0 4px 18px rgba(140, 120, 180, 0.08);
-  --navbar-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --soft-shadow: 0 8px 28px rgba(60, 40, 100, 0.1);
+  --navbar-shadow: 0 1px 0 rgba(40, 30, 60, 0.06);
 
   /* Notification / status icon tints */
-  --accent-icon-bg: #efe8fc;
-  --accent-icon-fg: #9d8ad4;
+  --accent-icon-bg: #efeaf6;
+  --accent-icon-fg: #5c4a8a;
 }
 
 [data-theme='dark'] {
@@ -73,8 +73,8 @@
   --sidebar-admin-border: #2a2a3a;
   --sidebar-admin-hover: #222233;
 
-  --soft-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-  --navbar-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --soft-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  --navbar-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
 
   --accent-icon-bg: #2a2438;
   --accent-icon-fg: #cfc0f5;

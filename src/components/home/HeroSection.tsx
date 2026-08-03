@@ -67,13 +67,15 @@ export function HeroSection() {
     <section className="hero-section">
       <div className="hero-content">
         <h1>
-          Connect with trusted <br />
-          companies <span>easily.</span>
+          Your health essentials, <span>one click away.</span>
         </h1>
-        <p>A wide range of products for your everyday well-being.</p>
+        <p>
+          Discover trusted pharmacies and wellness products from verified
+          partners — carefully selected for everyday care.
+        </p>
         <div className="hero-buttons">
           <Link to="/products" className="btn btn-primary">
-            Explore Products
+            Explore products
           </Link>
           <a href="#best-sellers" className="btn btn-secondary">
             Learn more
@@ -81,20 +83,22 @@ export function HeroSection() {
         </div>
       </div>
       <div className="hero-image">
-        {current ? (
-          <img
-            key={current.src}
-            src={current.src}
-            alt={current.alt}
-            className={`hero-product-image${fade ? ' is-visible' : ''}`}
-          />
-        ) : (
-          <div
-            className="illustration-bg"
-            role="img"
-            aria-label="Clients and companies connection"
-          />
-        )}
+        <div className="hero-image-frame">
+          {current ? (
+            <img
+              key={current.src}
+              src={current.src}
+              alt={current.alt}
+              className={`hero-product-image${fade ? ' is-visible' : ''}`}
+            />
+          ) : (
+            <div
+              className="illustration-bg"
+              role="img"
+              aria-label="Wellness and pharmacy products"
+            />
+          )}
+        </div>
       </div>
     </section>
   );

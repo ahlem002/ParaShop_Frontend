@@ -233,13 +233,13 @@
 }
 
 .btn-nav {
-  height: 48px;
-  padding: 0 22px;
-  font-size: 16px;
+  height: 40px;
+  padding: 0 18px;
+  font-size: 14px;
 }
 
 .pending-page {
-  min-height: calc(100vh - 130px);
+  min-height: calc(100vh - 78px);
   display: flex;
   align-items: center;
   justify-content: center;

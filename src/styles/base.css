@@ -2,7 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
 body {
@@ -10,10 +10,11 @@ body {
   color: var(--text-main);
   padding-bottom: 60px;
   transition: background-color 0.2s ease, color 0.2s ease;
+  -webkit-font-smoothing: antialiased;
 }
 
 .container {
-  max-width: 1280px;
+  max-width: 1480px;
   margin: auto;
   padding: 24px;
 }

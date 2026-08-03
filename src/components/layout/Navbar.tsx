@@ -1,10 +1,12 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 import { NavAvatar } from './NavAvatar';
 import { NotificationBell } from '../notifications/NotificationBell';
 import '../../styles/pages/notifications.css';
+import '../../styles/pages/cart.css';
 
 const navLinks = [
   { label: 'Home', to: '/' },
@@ -14,6 +16,7 @@ const navLinks = [
 export function Navbar() {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const { cart } = useCart();
 
   function handleLogout() {
     logout();
@@ -38,6 +41,18 @@ export function Navbar() {
         ))}
         {isAuthenticated && user?.role === 'CLIENT' && (
           <>
+            <NavLink
+              to="/cart"
+              className={({ isActive }) => (isActive ? 'active' : undefined)}
+            >
+              Cart
+              {cart.itemCount > 0 && (
+                <span className="nav-cart-link__count">
+                  {' '}
+                  ({cart.itemCount > 99 ? '99+' : cart.itemCount})
+                </span>
+              )}
+            </NavLink>
             <NavLink
               to="/notifications"
               className={({ isActive }) => (isActive ? 'active' : undefined)}

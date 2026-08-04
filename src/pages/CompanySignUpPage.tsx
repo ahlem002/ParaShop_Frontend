@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Navbar } from '../components/layout/Navbar';
+import { PublicShell } from '../components/layout/PublicShell';
 import { useAuth } from '../context/AuthContext';
 import '../styles/pages/auth.css';
 
@@ -64,8 +64,7 @@ export function CompanySignUpPage() {
   }
 
   return (
-    <>
-      <Navbar />
+    <PublicShell>
       <div className="auth-page">
         <div className="auth-card auth-card--wide">
           <h1>Register your company</h1>
@@ -251,6 +250,6 @@ export function CompanySignUpPage() {
           </div>
         </div>
       </div>
-    </>
+    </PublicShell>
   );
 }

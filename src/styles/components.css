@@ -32,12 +32,16 @@
   color: var(--primary-hover);
 }
 
-/* Navbar */
+/* Navbar — solid theme chrome */
 .navbar {
   height: 78px;
-  background-color: color-mix(in srgb, var(--white-cards) 92%, transparent);
-  backdrop-filter: blur(10px);
-  box-shadow: var(--navbar-shadow);
+  background: linear-gradient(
+    180deg,
+    var(--chrome-bg) 0%,
+    var(--chrome-bg-end) 100%
+  );
+  border-bottom: 1px solid var(--chrome-border);
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--chrome-bg) 35%, transparent);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -47,6 +51,16 @@
   z-index: 50;
 }
 
+.navbar .logo-para {
+  color: var(--chrome-fg);
+}
+
+.navbar .logo-shop,
+.navbar .logo-plus {
+  color: var(--chrome-fg);
+  opacity: 0.92;
+}
+
 .nav-links {
   display: flex;
   gap: 36px;
@@ -54,15 +68,15 @@
 
 .nav-links a {
   text-decoration: none;
-  color: var(--text-secondary);
+  color: var(--chrome-fg-muted);
   font-weight: 600;
   font-size: 15px;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, opacity 0.2s ease;
 }
 
 .nav-links a:hover,
 .nav-links a.active {
-  color: var(--primary-lavender);
+  color: var(--chrome-fg-active);
 }
 
 .nav-auth {
@@ -75,6 +89,85 @@
 
 .nav-auth a {
   text-decoration: none;
+}
+
+/* Auth buttons on colored chrome */
+.navbar .btn-nav.btn-secondary {
+  border-color: rgba(255, 255, 255, 0.55);
+  color: var(--chrome-fg);
+  background: transparent;
+}
+
+.navbar .btn-nav.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.85);
+  color: var(--chrome-fg);
+}
+
+.navbar .btn-nav.btn-primary {
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--chrome-bg);
+}
+
+.navbar .btn-nav.btn-primary:hover {
+  background: #ffffff;
+  color: var(--chrome-bg-end);
+}
+
+.navbar .nav-avatar__name {
+  color: var(--chrome-fg);
+}
+
+.navbar .nav-avatar:hover .nav-avatar__name {
+  color: var(--chrome-fg);
+  opacity: 0.9;
+}
+
+.navbar .nav-avatar__circle {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+.navbar .nav-avatar__initials {
+  color: var(--chrome-fg);
+}
+
+.navbar .theme-switch:not(.is-on) .theme-switch__icon--sun,
+.navbar .theme-switch.is-on .theme-switch__icon--moon {
+  color: var(--chrome-fg);
+}
+
+.navbar .theme-switch__icon {
+  color: var(--chrome-fg-muted);
+}
+
+.navbar .theme-switch__track {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.navbar .theme-switch.is-on .theme-switch__track {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.navbar .theme-switch:focus-visible {
+  outline-color: rgba(255, 255, 255, 0.8);
+}
+
+.navbar .notification-bell__trigger {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--chrome-fg);
+}
+
+.navbar .notification-bell__trigger:hover {
+  border-color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--chrome-fg);
+}
+
+.navbar .notification-bell__badge {
+  background: #ffffff;
+  color: var(--chrome-bg);
 }
 
 .theme-switch-wrap {
@@ -379,25 +472,65 @@
   line-height: 1.35;
 }
 
+/* Shared card grid — products, cart, orders */
+.shop-cards-grid,
+.products-grid,
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--shop-card-gap);
+}
+
+@media (max-width: 1100px) {
+  .shop-cards-grid,
+  .products-grid,
+  .orders-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .shop-cards-grid,
+  .products-grid,
+  .orders-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .shop-cards-grid,
+  .products-grid,
+  .orders-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* Product card */
 .product-card {
   background-color: var(--white-cards);
-  border-radius: 22px;
-  padding: 14px;
+  border-radius: var(--shop-card-radius);
+  padding: var(--shop-card-padding);
   box-shadow: var(--soft-shadow);
   position: relative;
-  border: 1px solid color-mix(in srgb, var(--primary-lavender) 7%, transparent);
+  height: 100%;
+  border: 1px solid color-mix(in srgb, var(--primary-lavender) 16%, var(--border-input));
   transition:
     transform 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .product-img-placeholder {
-  height: 180px;
+  aspect-ratio: 1;
+  width: 100%;
+  height: auto;
   background-color: var(--bg-very-light);
-  border-radius: 16px;
-  margin-bottom: 14px;
+  border-radius: var(--shop-card-image-radius);
+  margin-bottom: 10px;
   overflow: hidden;
+  object-fit: cover;
+  display: block;
 }
 
 .product-details {
@@ -406,8 +539,8 @@
 
 .wishlist-btn {
   position: absolute;
-  top: 24px;
-  right: 24px;
+  top: calc(var(--shop-card-padding) + 8px);
+  right: calc(var(--shop-card-padding) + 8px);
   background: color-mix(in srgb, var(--white-cards) 92%, white);
   border: none;
   width: 34px;

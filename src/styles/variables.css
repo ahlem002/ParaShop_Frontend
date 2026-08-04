@@ -44,6 +44,20 @@
   /* Notification / status icon tints */
   --accent-icon-bg: #efeaf6;
   --accent-icon-fg: #5c4a8a;
+
+  /* Shared shop cards (products / cart / orders) */
+  --shop-card-gap: 16px;
+  --shop-card-radius: 16px;
+  --shop-card-padding: 12px;
+  --shop-card-image-radius: 12px;
+
+  /* Navbar / footer chrome */
+  --chrome-bg: #5c4a8a;
+  --chrome-bg-end: #4a3a72;
+  --chrome-fg: #ffffff;
+  --chrome-fg-muted: rgba(255, 255, 255, 0.82);
+  --chrome-fg-active: #ffffff;
+  --chrome-border: #3d3160;
 }
 
 [data-theme='dark'] {
@@ -78,4 +92,11 @@
 
   --accent-icon-bg: #2a2438;
   --accent-icon-fg: #cfc0f5;
+
+  --chrome-bg: #4a3a72;
+  --chrome-bg-end: #352a55;
+  --chrome-fg: #ffffff;
+  --chrome-fg-muted: rgba(255, 255, 255, 0.78);
+  --chrome-fg-active: #ffffff;
+  --chrome-border: #2a2140;
 }

@@ -5,6 +5,7 @@ import {
   updateClientStatus,
 } from '../../services/admin.service';
 import { ListToolbar } from '../../components/common/ListToolbar';
+import { useConfirm } from '../../context/ConfirmContext';
 
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString();
@@ -19,6 +20,7 @@ function StatusBadge({ status }: { status: AdminClient['status'] }) {
 }
 
 export function AdminClientsPage() {
+  const { confirm } = useConfirm();
   const [clients, setClients] = useState<AdminClient[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -67,13 +69,13 @@ export function AdminClientsPage() {
     const newStatus = client.status === 'ACTIVE' ? 'BLOCKED' : 'ACTIVE';
     const action = newStatus === 'BLOCKED' ? 'block' : 'activate';
 
-    if (
-      !window.confirm(
-        `Are you sure you want to ${action} ${client.firstName} ${client.lastName}?`,
-      )
-    ) {
-      return;
-    }
+    const ok = await confirm({
+      title: `${action === 'block' ? 'Block' : 'Activate'} client?`,
+      message: `Are you sure you want to ${action} ${client.firstName} ${client.lastName}?`,
+      confirmLabel: action === 'block' ? 'Yes, block' : 'Yes, activate',
+      danger: action === 'block',
+    });
+    if (!ok) return;
 
     setUpdatingId(client.clientId);
 

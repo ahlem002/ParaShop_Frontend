@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Eye, Search, X } from 'lucide-react';
 import type { AdminUser, AdminUserRole } from '../../types/admin';
 import { getAdminUsers, updateUserStatus } from '../../services/admin.service';
+import { useConfirm } from '../../context/ConfirmContext';
 
 type RoleFilter = 'ALL' | AdminUserRole;
 
@@ -101,6 +102,7 @@ function UserDetailsModal({
 }
 
 export function AdminUsersPage() {
+  const { confirm } = useConfirm();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -152,9 +154,13 @@ export function AdminUsersPage() {
     const newStatus = user.status === 'ACTIVE' ? 'BLOCKED' : 'ACTIVE';
     const action = newStatus === 'BLOCKED' ? 'block' : 'activate';
 
-    if (!window.confirm(`Are you sure you want to ${action} ${user.firstName} ${user.lastName}?`)) {
-      return;
-    }
+    const ok = await confirm({
+      title: `${action === 'block' ? 'Block' : 'Activate'} user?`,
+      message: `Are you sure you want to ${action} ${user.firstName} ${user.lastName}?`,
+      confirmLabel: action === 'block' ? 'Yes, block' : 'Yes, activate',
+      danger: action === 'block',
+    });
+    if (!ok) return;
 
     setUpdatingId(user.userId);
 

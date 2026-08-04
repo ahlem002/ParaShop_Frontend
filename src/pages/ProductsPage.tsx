@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Navbar } from '../components/layout/Navbar';
+import { PublicShell } from '../components/layout/PublicShell';
 import { ProductCard } from '../components/home/ProductCard';
 import { ListToolbar } from '../components/common/ListToolbar';
 import type { PublicProduct } from '../types/product';
@@ -122,8 +122,7 @@ export function ProductsPage() {
   ]);
 
   return (
-    <>
-      <Navbar />
+    <PublicShell>
       <main className="container home-container">
         <section className="best-sellers">
           <div className="section-header">
@@ -211,6 +210,6 @@ export function ProductsPage() {
           </div>
         </section>
       </main>
-    </>
+    </PublicShell>
   );
 }

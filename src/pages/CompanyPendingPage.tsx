@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { Navbar } from '../components/layout/Navbar';
+import { PublicShell } from '../components/layout/PublicShell';
 import { useAuth } from '../context/AuthContext';
 import '../styles/pages/auth.css';
 
@@ -17,8 +17,7 @@ export function CompanyPendingPage() {
   const isRejected = user.companyVerificationStatus === 'REJECTED';
 
   return (
-    <>
-      <Navbar />
+    <PublicShell>
       <div className="pending-page">
         <div className="pending-card">
           <h1>{isRejected ? 'Registration rejected' : 'Account under review'}</h1>
@@ -37,6 +36,6 @@ export function CompanyPendingPage() {
           </button>
         </div>
       </div>
-    </>
+    </PublicShell>
   );
 }

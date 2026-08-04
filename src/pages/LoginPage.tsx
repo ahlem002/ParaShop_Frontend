@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Navbar } from '../components/layout/Navbar';
+import { PublicShell } from '../components/layout/PublicShell';
 import { useAuth } from '../context/AuthContext';
 import '../styles/pages/auth.css';
 
@@ -65,8 +65,7 @@ export function LoginPage() {
   }
 
   return (
-    <>
-      <Navbar />
+    <PublicShell>
       <div className="auth-page">
         <div className="auth-card auth-card--wide">
           <h1>{tempToken ? 'Two-step verification' : 'Welcome back'}</h1>
@@ -170,6 +169,6 @@ export function LoginPage() {
           )}
         </div>
       </div>
-    </>
+    </PublicShell>
   );
 }

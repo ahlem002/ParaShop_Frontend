@@ -25,14 +25,17 @@ export interface AccentOption {
   swatch: string;
 }
 
-/** Hue for each accent — pharmacy / wellness professional tones */
-const ACCENT_HUES: Record<AccentColor, number> = {
-  lavender: 268,
-  pink: 340,
-  rose: 350,
-  blue: 210,
-  mint: 152,
-  peach: 24,
+/** Fixed HSL for each accent — saturated enough to read as real color, not a shadow tint */
+const ACCENT_PALETTES: Record<
+  AccentColor,
+  { h: number; s: number; l: number; hoverL: number }
+> = {
+  lavender: { h: 268, s: 48, l: 42, hoverL: 34 },
+  mint: { h: 152, s: 42, l: 34, hoverL: 26 },
+  peach: { h: 24, s: 78, l: 48, hoverL: 40 },
+  blue: { h: 210, s: 55, l: 42, hoverL: 34 },
+  rose: { h: 350, s: 48, l: 46, hoverL: 38 },
+  pink: { h: 340, s: 55, l: 52, hoverL: 44 },
 };
 
 export const ACCENT_OPTIONS: AccentOption[] = [
@@ -40,61 +43,52 @@ export const ACCENT_OPTIONS: AccentOption[] = [
     value: 'lavender',
     label: 'Modern purple',
     description: 'Clean royal lilac',
-    swatch: 'hsl(268 42% 42%)',
+    swatch: 'hsl(268 48% 42%)',
   },
   {
     value: 'mint',
     label: 'Natural green',
     description: 'Fresh forest green',
-    swatch: 'hsl(152 38% 34%)',
+    swatch: 'hsl(152 42% 34%)',
   },
   {
     value: 'peach',
     label: 'Warm peach',
     description: 'Welcoming apricot',
-    swatch: 'hsl(24 72% 48%)',
+    swatch: 'hsl(24 78% 48%)',
   },
   {
     value: 'blue',
     label: 'Calm blue',
     description: 'Trustworthy blue',
-    swatch: 'hsl(210 48% 42%)',
+    swatch: 'hsl(210 55% 42%)',
   },
   {
     value: 'rose',
     label: 'Soft rose',
     description: 'Muted rose',
-    swatch: 'hsl(350 42% 46%)',
+    swatch: 'hsl(350 48% 46%)',
   },
   {
     value: 'pink',
     label: 'Blush',
     description: 'Soft blush',
-    swatch: 'hsl(340 48% 52%)',
+    swatch: 'hsl(340 55% 52%)',
   },
 ];
 
 interface ThemeContextValue {
   theme: ThemeMode;
   accent: AccentColor;
-  /** 0 = softest / muted, 100 = strongest / vivid */
-  accentIntensity: number;
   toggleTheme: () => void;
   setTheme: (theme: ThemeMode) => void;
   setAccent: (accent: AccentColor) => void;
-  setAccentIntensity: (intensity: number) => void;
 }
 
 const THEME_KEY = 'parashop-theme';
 const ACCENT_KEY = 'parashop-accent';
-const INTENSITY_KEY = 'parashop-accent-intensity';
-const DEFAULT_INTENSITY = 72;
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
-}
 
 function hsl(h: number, s: number, l: number, a?: number) {
   if (a === undefined) return `hsl(${h} ${s}% ${l}%)`;
@@ -124,18 +118,6 @@ function getPreferredAccent(): AccentColor {
   return isAccentColor(stored) ? stored : 'lavender';
 }
 
-function getPreferredIntensity(): number {
-  if (typeof window === 'undefined') return DEFAULT_INTENSITY;
-  const stored = window.localStorage.getItem(INTENSITY_KEY);
-  if (stored == null) return DEFAULT_INTENSITY;
-  const parsed = Number(stored);
-  if (Number.isNaN(parsed)) return DEFAULT_INTENSITY;
-  const clamped = clamp(Math.round(parsed), 0, 100);
-  // Old default (48) looked washed; lift once to the new default.
-  if (clamped === 48) return DEFAULT_INTENSITY;
-  return clamped;
-}
-
 function applyTheme(theme: ThemeMode) {
   document.documentElement.setAttribute('data-theme', theme);
 }
@@ -144,84 +126,78 @@ function applyAccentAttr(accent: AccentColor) {
   document.documentElement.setAttribute('data-accent', accent);
 }
 
-/**
- * Maps intensity 0→100 onto soft tint ↔ deeper brand accent.
- * Tuned for pharmacy/wellness: deep buttons, cream-tinted surfaces.
- */
-function applyAccentPalette(
-  accent: AccentColor,
-  intensity: number,
-  theme: ThemeMode,
-) {
+function applyAccentPalette(accent: AccentColor, theme: ThemeMode) {
   const root = document.documentElement;
-  const h = ACCENT_HUES[accent];
-  const t = clamp(intensity, 0, 100) / 100;
+  const { h, s, l, hoverL } = ACCENT_PALETTES[accent];
+  const primary = hsl(h, s, l);
+  const primaryHover = hsl(h, Math.min(70, s + 8), hoverL);
 
   if (theme === 'light') {
-    // Deep, muted primaries (forest / royal / apricot) — not candy pastels
-    const primaryS = 34 + t * 22; // 34 → 56
-    const primaryL = 40 - t * 8; // 40 → 32
-    const hoverS = Math.min(62, primaryS + 6);
-    const hoverL = Math.max(26, primaryL - 7);
-    const softS = 20 + t * 14;
-    const softL = 96 - t * 2;
-    const primary = hsl(h, primaryS, primaryL);
-    const primaryHover = hsl(h, hoverS, hoverL);
-    const lightAccent = hsl(h, softS, softL);
-
-    // Clean white surfaces — accent only on UI chrome, not the page wash
-    const pageBg = '#ffffff';
-    const surfaceBg = '#f7f7f9';
-    const cardBg = '#ffffff';
-    const border = '#e8e8ee';
+    const soft = hsl(h, Math.max(18, s - 20), 94);
+    const surface = hsl(h, Math.max(12, s - 28), 97);
+    const pageBg = hsl(h, Math.max(10, s - 30), 98.5);
+    const border = hsl(h, Math.max(10, s - 30), 88);
 
     root.style.setProperty('--primary-lavender', primary);
     root.style.setProperty('--primary-hover', primaryHover);
-    root.style.setProperty('--light-accent', lightAccent);
-    root.style.setProperty('--bg-very-light', surfaceBg);
+    root.style.setProperty('--light-accent', soft);
+    root.style.setProperty('--bg-very-light', surface);
     root.style.setProperty('--page-bg', pageBg);
-    root.style.setProperty('--white-cards', cardBg);
+    root.style.setProperty('--white-cards', '#ffffff');
     root.style.setProperty('--border-input', border);
     root.style.setProperty('--sidebar-client', primaryHover);
     root.style.setProperty('--sidebar-company', primary);
-    root.style.setProperty('--sidebar-admin-bg', cardBg);
+    root.style.setProperty('--sidebar-admin-bg', '#ffffff');
     root.style.setProperty('--sidebar-admin-border', border);
-    root.style.setProperty('--sidebar-admin-hover', surfaceBg);
+    root.style.setProperty('--sidebar-admin-hover', surface);
     root.style.setProperty(
       '--soft-shadow',
-      `0 8px 28px ${hsl(h, Math.min(40, primaryS), 28, 0.1 + t * 0.08)}`,
+      `0 8px 28px ${hsl(h, Math.min(40, s), 28, 0.12)}`,
     );
-    root.style.setProperty('--accent-icon-bg', lightAccent);
+    root.style.setProperty('--accent-icon-bg', soft);
     root.style.setProperty('--accent-icon-fg', primary);
+    root.style.setProperty('--chrome-bg', primary);
+    root.style.setProperty('--chrome-bg-end', primaryHover);
+    root.style.setProperty('--chrome-fg', '#ffffff');
+    root.style.setProperty('--chrome-fg-muted', 'rgba(255, 255, 255, 0.82)');
+    root.style.setProperty('--chrome-fg-active', '#ffffff');
+    root.style.setProperty('--chrome-border', hsl(h, s, Math.max(22, hoverL - 4)));
     root.style.setProperty('--text-main', '#1c2430');
     root.style.setProperty('--text-secondary', '#5c6575');
     root.style.setProperty('--text-disabled', '#9aa3b2');
     return;
   }
 
-  // Dark mode
-  const s = 36 + t * 28;
-  const l = 68 - t * 8;
-  const hoverS = Math.min(72, s + 6);
-  const hoverL = Math.min(78, l + 6);
-  const softS = 22 + t * 18;
-  const softL = 18 + t * 6;
+  // Dark mode — brighter accent for contrast on dark surfaces
+  const darkS = Math.min(70, s + 10);
+  const darkL = Math.min(68, l + 18);
+  const darkHoverL = Math.min(76, darkL + 8);
+  const darkPrimary = hsl(h, darkS, darkL);
+  const darkHover = hsl(h, darkS, darkHoverL);
+  const soft = hsl(h, 28, 18);
+  const border = '#3f3f54';
 
-  root.style.setProperty('--primary-lavender', hsl(h, s, l));
-  root.style.setProperty('--primary-hover', hsl(h, hoverS, hoverL));
-  root.style.setProperty('--light-accent', hsl(h, softS, softL));
+  root.style.setProperty('--primary-lavender', darkPrimary);
+  root.style.setProperty('--primary-hover', darkHover);
+  root.style.setProperty('--light-accent', soft);
   root.style.setProperty('--bg-very-light', '#16161f');
   root.style.setProperty('--page-bg', '#0f0f14');
   root.style.setProperty('--white-cards', '#1c1c28');
-  root.style.setProperty('--border-input', '#3f3f54');
-  root.style.setProperty('--sidebar-client', hsl(h, s, l));
-  root.style.setProperty('--sidebar-company', hsl(h, hoverS, hoverL));
+  root.style.setProperty('--border-input', border);
+  root.style.setProperty('--sidebar-client', darkPrimary);
+  root.style.setProperty('--sidebar-company', darkHover);
   root.style.setProperty('--sidebar-admin-bg', '#151520');
   root.style.setProperty('--sidebar-admin-border', '#2a2a3a');
   root.style.setProperty('--sidebar-admin-hover', '#222233');
   root.style.setProperty('--soft-shadow', '0 8px 28px hsl(0 0% 0% / 0.45)');
-  root.style.setProperty('--accent-icon-bg', hsl(h, softS, softL));
-  root.style.setProperty('--accent-icon-fg', hsl(h, hoverS, hoverL));
+  root.style.setProperty('--accent-icon-bg', soft);
+  root.style.setProperty('--accent-icon-fg', darkHover);
+  root.style.setProperty('--chrome-bg', hsl(h, darkS, Math.max(22, l - 8)));
+  root.style.setProperty('--chrome-bg-end', hsl(h, darkS, Math.max(16, l - 14)));
+  root.style.setProperty('--chrome-fg', '#ffffff');
+  root.style.setProperty('--chrome-fg-muted', 'rgba(255, 255, 255, 0.78)');
+  root.style.setProperty('--chrome-fg-active', '#ffffff');
+  root.style.setProperty('--chrome-border', hsl(h, darkS, Math.max(12, l - 18)));
   root.style.setProperty('--text-main', '#f3f4f6');
   root.style.setProperty('--text-secondary', '#a1a1aa');
   root.style.setProperty('--text-disabled', '#71717a');
@@ -231,10 +207,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<ThemeMode>(() => {
     const initialTheme = getPreferredTheme();
     const initialAccent = getPreferredAccent();
-    const initialIntensity = getPreferredIntensity();
     applyTheme(initialTheme);
     applyAccentAttr(initialAccent);
-    applyAccentPalette(initialAccent, initialIntensity, initialTheme);
+    applyAccentPalette(initialAccent, initialTheme);
     return initialTheme;
   });
 
@@ -242,18 +217,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     getPreferredAccent(),
   );
 
-  const [accentIntensity, setAccentIntensityState] = useState<number>(() =>
-    getPreferredIntensity(),
-  );
-
   useEffect(() => {
     applyTheme(theme);
     applyAccentAttr(accent);
-    applyAccentPalette(accent, accentIntensity, theme);
+    applyAccentPalette(accent, theme);
     window.localStorage.setItem(THEME_KEY, theme);
     window.localStorage.setItem(ACCENT_KEY, accent);
-    window.localStorage.setItem(INTENSITY_KEY, String(accentIntensity));
-  }, [theme, accent, accentIntensity]);
+    window.localStorage.removeItem('parashop-accent-intensity');
+  }, [theme, accent]);
 
   const setTheme = useCallback((next: ThemeMode) => {
     setThemeState(next);
@@ -261,10 +232,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const setAccent = useCallback((next: AccentColor) => {
     setAccentState(next);
-  }, []);
-
-  const setAccentIntensity = useCallback((next: number) => {
-    setAccentIntensityState(clamp(Math.round(next), 0, 100));
   }, []);
 
   const toggleTheme = useCallback(() => {
@@ -275,21 +242,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     () => ({
       theme,
       accent,
-      accentIntensity,
       toggleTheme,
       setTheme,
       setAccent,
-      setAccentIntensity,
     }),
-    [
-      theme,
-      accent,
-      accentIntensity,
-      toggleTheme,
-      setTheme,
-      setAccent,
-      setAccentIntensity,
-    ],
+    [theme, accent, toggleTheme, setTheme, setAccent],
   );
 
   return (

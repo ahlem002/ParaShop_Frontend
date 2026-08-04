@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { ChevronDown, Moon, Pencil, Sun } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme, ACCENT_OPTIONS, type ThemeMode } from '../context/ThemeContext';
+import { useConfirm } from '../context/ConfirmContext';
 import {
   changePassword,
   disableTwoFactor,
@@ -26,8 +27,8 @@ function formatDateLabel(value: string | null | undefined) {
 
 export function SettingsPage() {
   const { user, updateProfile, setUserFromProfile } = useAuth();
-  const { theme, setTheme, accent, setAccent, accentIntensity, setAccentIntensity } =
-    useTheme();
+  const { theme, setTheme, accent, setAccent } = useTheme();
+  const { confirm } = useConfirm();
   const [activeTab, setActiveTab] = useState<SettingsTab>('appearance');
   const [passwordOpen, setPasswordOpen] = useState(false);
 
@@ -230,6 +231,15 @@ export function SettingsPage() {
 
   async function handleDisableTwoFactor(event: FormEvent) {
     event.preventDefault();
+    const ok = await confirm({
+      title: 'Disable two-step verification?',
+      message:
+        'Your account will be less secure without two-step verification. Continue?',
+      confirmLabel: 'Yes, disable',
+      danger: true,
+    });
+    if (!ok) return;
+
     setTwoFactorError('');
     setTwoFactorSuccess('');
     setTwoFactorBusy(true);
@@ -347,40 +357,6 @@ export function SettingsPage() {
                   </button>
                 );
               })}
-            </div>
-
-            <div className="settings-intensity">
-              <div className="settings-intensity__head">
-                <div>
-                  <h3 className="profile-section-title settings-accent-title">
-                    Color intensity
-                  </h3>
-                  <p className="profile-page__subtitle">
-                    Soft and muted on the left, stronger and more vivid on the
-                    right.
-                  </p>
-                </div>
-                <span className="settings-intensity__value">
-                  {accentIntensity}%
-                </span>
-              </div>
-
-              <div className="settings-intensity__slider-row">
-                <span>Soft</span>
-                <input
-                  type="range"
-                  className="settings-intensity__slider"
-                  min={0}
-                  max={100}
-                  step={1}
-                  value={accentIntensity}
-                  onChange={(event) =>
-                    setAccentIntensity(Number(event.target.value))
-                  }
-                  aria-label="Color intensity"
-                />
-                <span>Strong</span>
-              </div>
             </div>
           </section>
         </div>

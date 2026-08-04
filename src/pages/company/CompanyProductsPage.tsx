@@ -8,12 +8,14 @@ import {
 } from '../../services/products.service';
 import { resolveUploadUrl } from '../../config/api';
 import { ListToolbar } from '../../components/common/ListToolbar';
+import { useConfirm } from '../../context/ConfirmContext';
 
 function formatPrice(value: number | string) {
   return `${Number(value).toFixed(2)} TND`;
 }
 
 export function CompanyProductsPage() {
+  const { confirm } = useConfirm();
   const [products, setProducts] = useState<CompanyProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -79,9 +81,13 @@ export function CompanyProductsPage() {
   }, [products, search, statusFilter, categoryFilter, stockFilter]);
 
   async function handleDelete(product: CompanyProduct) {
-    if (!window.confirm(`Delete "${product.name}"?`)) {
-      return;
-    }
+    const ok = await confirm({
+      title: 'Delete product?',
+      message: `Delete "${product.name}"? This cannot be undone.`,
+      confirmLabel: 'Yes, delete',
+      danger: true,
+    });
+    if (!ok) return;
 
     setDeletingId(product.productId);
 

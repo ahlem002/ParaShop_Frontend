@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
-import { Navbar } from '../components/layout/Navbar';
+import { PublicShell } from '../components/layout/PublicShell';
 import { useCart } from '../context/CartContext';
+import { useConfirm } from '../context/ConfirmContext';
 import { resolveUploadUrl } from '../config/api';
 import type { CartCompanyGroup } from '../types/cart';
 import '../styles/pages/cart.css';
@@ -12,6 +13,7 @@ function formatPrice(value: number) {
 }
 
 export function CartPage() {
+  const navigate = useNavigate();
   const {
     cart,
     loading,
@@ -21,9 +23,9 @@ export function CartPage() {
     clearAll,
     clearCompany,
   } = useCart();
+  const { confirm } = useConfirm();
   const [busyId, setBusyId] = useState('');
   const [actionError, setActionError] = useState('');
-  const [checkoutHint, setCheckoutHint] = useState('');
 
   async function runAction(id: string, action: () => Promise<void>) {
     setBusyId(id);
@@ -38,14 +40,47 @@ export function CartPage() {
   }
 
   function handleCheckoutCompany(group: CartCompanyGroup) {
-    setCheckoutHint(
-      `Checkout for “${group.companyName}” is ready (${formatPrice(group.total)}). Flouci payment comes next.`,
+    navigate(`/checkout?companyId=${encodeURIComponent(group.companyId)}`);
+  }
+
+  async function handleClearCart() {
+    const ok = await confirm({
+      title: 'Clear entire cart?',
+      message:
+        'This will remove all products from your cart. This action cannot be undone.',
+      confirmLabel: 'Yes, clear cart',
+      danger: true,
+    });
+    if (!ok) return;
+    await runAction('clear', clearAll);
+  }
+
+  async function handleClearCompany(group: CartCompanyGroup) {
+    const ok = await confirm({
+      title: 'Remove company items?',
+      message: `This will remove all products from “${group.companyName}” in your cart.`,
+      confirmLabel: 'Yes, remove items',
+      danger: true,
+    });
+    if (!ok) return;
+    await runAction(`company-${group.companyId}`, () =>
+      clearCompany(group.companyId),
     );
   }
 
+  async function handleRemoveItem(cartItemId: string, productName: string) {
+    const ok = await confirm({
+      title: 'Remove item?',
+      message: `Remove “${productName}” from your cart?`,
+      confirmLabel: 'Yes, remove',
+      danger: true,
+    });
+    if (!ok) return;
+    await runAction(cartItemId, () => removeItem(cartItemId));
+  }
+
   return (
-    <>
-      <Navbar />
+    <PublicShell>
       <main className="container home-container cart-page">
         <div className="cart-page__header">
           <div>
@@ -60,7 +95,7 @@ export function CartPage() {
               type="button"
               className="btn btn-secondary"
               disabled={Boolean(busyId)}
-              onClick={() => void runAction('clear', clearAll)}
+              onClick={() => void handleClearCart()}
             >
               Clear cart
             </button>
@@ -69,9 +104,6 @@ export function CartPage() {
 
         {(error || actionError) && (
           <div className="cart-page__error">{actionError || error}</div>
-        )}
-        {checkoutHint && (
-          <div className="cart-page__hint">{checkoutHint}</div>
         )}
 
         {loading && cart.items.length === 0 && <p>Loading cart...</p>}
@@ -87,141 +119,141 @@ export function CartPage() {
           </div>
         )}
 
-        <div className="cart-groups">
+        <div className="cart-company-stack">
           {cart.groups.map((group) => (
-            <section key={group.companyId} className="cart-group">
-              <div className="cart-group__head">
+            <section key={group.companyId} className="cart-company-block">
+              <div className="cart-company-block__head">
                 <div>
                   <h2>{group.companyName}</h2>
-                  <p>{group.items.length} product(s) from this company</p>
+                  <p>
+                    {group.items.length} item
+                    {group.items.length === 1 ? '' : 's'} · Delivery{' '}
+                    {formatPrice(group.deliveryFee)} · Total{' '}
+                    {formatPrice(group.total)}
+                  </p>
                 </div>
-                <button
-                  type="button"
-                  className="cart-group__clear"
-                  disabled={Boolean(busyId)}
-                  onClick={() =>
-                    void runAction(`company-${group.companyId}`, () =>
-                      clearCompany(group.companyId),
-                    )
-                  }
-                >
-                  Remove company items
-                </button>
+                <div className="cart-company-block__actions">
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-nav"
+                    disabled={Boolean(busyId)}
+                    onClick={() => void handleClearCompany(group)}
+                  >
+                    Remove all
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-nav"
+                    onClick={() => handleCheckoutCompany(group)}
+                  >
+                    Checkout
+                  </button>
+                </div>
               </div>
 
-              <ul className="cart-group__items">
+              <div className="products-grid">
                 {group.items.map((item) => {
-                  const image = resolveUploadUrl(item.product.images?.[0] ?? null);
+                  const image = resolveUploadUrl(
+                    item.product.images?.[0] ?? null,
+                  );
+                  const busy = busyId === item.cartItemId;
+
                   return (
-                    <li key={item.cartItemId} className="cart-item">
+                    <article key={item.cartItemId} className="product-card shop-line-card">
                       <Link
                         to={`/products/${item.product.productId}`}
-                        className="cart-item__media"
+                        className="shop-line-card__media"
                       >
                         {image ? (
-                          <img src={image} alt={item.product.name} />
+                          <img
+                            src={image}
+                            alt={item.product.name}
+                            className="product-img-placeholder"
+                          />
                         ) : (
-                          <div className="cart-item__placeholder" />
+                          <div className="product-img-placeholder" />
                         )}
                       </Link>
 
-                      <div className="cart-item__info">
-                        <Link to={`/products/${item.product.productId}`}>
-                          <h3>{item.product.name}</h3>
-                        </Link>
-                        <p>{formatPrice(item.product.price)} each</p>
-                        <p className="cart-item__stock">
-                          Stock: {item.product.stock}
-                        </p>
+                      <div className="product-details shop-line-card__details">
+                        <span className="company-name">
+                          {item.product.company.companyName}
+                        </span>
+                        <h3 className="product-title">
+                          <Link to={`/products/${item.product.productId}`}>
+                            {item.product.name}
+                          </Link>
+                        </h3>
+                        <div className="product-meta">
+                          <span className="price">
+                            {formatPrice(item.lineTotal)}
+                          </span>
+                          <span className="rating">
+                            {formatPrice(item.product.price)} each
+                          </span>
+                        </div>
                       </div>
 
-                      <div className="cart-item__qty">
+                      <div className="shop-line-card__actions">
+                        <div className="order-card__qty">
+                          <button
+                            type="button"
+                            aria-label="Decrease quantity"
+                            disabled={busy || item.quantity <= 1}
+                            onClick={() =>
+                              void runAction(item.cartItemId, () =>
+                                setItemQuantity(
+                                  item.cartItemId,
+                                  item.quantity - 1,
+                                ),
+                              )
+                            }
+                          >
+                            <Minus size={12} />
+                          </button>
+                          <span>{item.quantity}</span>
+                          <button
+                            type="button"
+                            aria-label="Increase quantity"
+                            disabled={
+                              busy || item.quantity >= item.product.stock
+                            }
+                            onClick={() =>
+                              void runAction(item.cartItemId, () =>
+                                setItemQuantity(
+                                  item.cartItemId,
+                                  item.quantity + 1,
+                                ),
+                              )
+                            }
+                          >
+                            <Plus size={12} />
+                          </button>
+                        </div>
                         <button
                           type="button"
-                          aria-label="Decrease quantity"
-                          disabled={
-                            busyId === item.cartItemId || item.quantity <= 1
-                          }
-                          onClick={() =>
-                            void runAction(item.cartItemId, () =>
-                              setItemQuantity(
-                                item.cartItemId,
-                                item.quantity - 1,
-                              ),
-                            )
-                          }
-                        >
-                          <Minus size={14} />
-                        </button>
-                        <span>{item.quantity}</span>
-                        <button
-                          type="button"
-                          aria-label="Increase quantity"
-                          disabled={
-                            busyId === item.cartItemId ||
-                            item.quantity >= item.product.stock
-                          }
-                          onClick={() =>
-                            void runAction(item.cartItemId, () =>
-                              setItemQuantity(
-                                item.cartItemId,
-                                item.quantity + 1,
-                              ),
-                            )
-                          }
-                        >
-                          <Plus size={14} />
-                        </button>
-                      </div>
-
-                      <div className="cart-item__line">
-                        <strong>{formatPrice(item.lineTotal)}</strong>
-                        <button
-                          type="button"
-                          className="cart-item__remove"
+                          className="shop-line-card__remove"
                           aria-label="Remove item"
-                          disabled={busyId === item.cartItemId}
+                          disabled={busy}
                           onClick={() =>
-                            void runAction(item.cartItemId, () =>
-                              removeItem(item.cartItemId),
+                            void handleRemoveItem(
+                              item.cartItemId,
+                              item.product.name,
                             )
                           }
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={15} />
+                          Remove
                         </button>
                       </div>
-                    </li>
+                    </article>
                   );
                 })}
-              </ul>
-
-              <div className="cart-group__footer">
-                <div className="cart-group__totals">
-                  <div>
-                    <span>Subtotal</span>
-                    <strong>{formatPrice(group.subtotal)}</strong>
-                  </div>
-                  <div>
-                    <span>Delivery fee</span>
-                    <strong>{formatPrice(group.deliveryFee)}</strong>
-                  </div>
-                  <div className="cart-group__total">
-                    <span>Total for this company</span>
-                    <strong>{formatPrice(group.total)}</strong>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => handleCheckoutCompany(group)}
-                >
-                  Checkout this company
-                </button>
               </div>
             </section>
           ))}
         </div>
       </main>
-    </>
+    </PublicShell>
   );
 }

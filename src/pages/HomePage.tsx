@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { Navbar } from '../components/layout/Navbar';
+import { PublicShell } from '../components/layout/PublicShell';
 import { BestSellersSection } from '../components/home/BestSellersSection';
 import { CategoriesSection } from '../components/home/CategoriesSection';
 import { HeroSection } from '../components/home/HeroSection';
@@ -26,14 +26,13 @@ export function HomePage() {
   }
 
   return (
-    <>
-      <Navbar />
+    <PublicShell>
       <main className="container home-container">
         <HeroSection />
         <SearchSection />
         <CategoriesSection />
         <BestSellersSection />
       </main>
-    </>
+    </PublicShell>
   );
 }

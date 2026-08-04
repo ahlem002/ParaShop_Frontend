@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { NotificationsProvider } from './context/NotificationsContext';
 import { CartProvider } from './context/CartContext';
+import { ConfirmProvider } from './context/ConfirmContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { AdminLayout } from './components/admin/AdminLayout';
 import { CompanyLayout } from './components/company/CompanyLayout';
@@ -10,6 +11,10 @@ import { HomePage } from './pages/HomePage';
 import { ProductsPage } from './pages/ProductsPage';
 import { PublicProductDetailPage } from './pages/PublicProductDetailPage';
 import { CartPage } from './pages/CartPage';
+import { CheckoutPage } from './pages/CheckoutPage';
+import { OrdersPage } from './pages/OrdersPage';
+import { PaymentSuccessPage } from './pages/PaymentSuccessPage';
+import { PaymentFailPage } from './pages/PaymentFailPage';
 import { LoginPage } from './pages/LoginPage';
 import { SignUpPage } from './pages/SignUpPage';
 import { CompanySignUpPage } from './pages/CompanySignUpPage';
@@ -33,14 +38,16 @@ import { ProfilePage } from './pages/ProfilePage';
 import { PublicProfilePage } from './pages/PublicProfilePage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { PublicNotificationsPage } from './pages/PublicNotificationsPage';
+import { HistoryPage } from './pages/HistoryPage';
 
 function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <NotificationsProvider>
-          <CartProvider>
-            <BrowserRouter>
+        <ConfirmProvider>
+          <NotificationsProvider>
+            <CartProvider>
+              <BrowserRouter>
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/products" element={<ProductsPage />} />
@@ -53,6 +60,38 @@ function App() {
                   element={
                     <ProtectedRoute allowedRoles={['CLIENT']}>
                       <CartPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/checkout"
+                  element={
+                    <ProtectedRoute allowedRoles={['CLIENT']}>
+                      <CheckoutPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/orders"
+                  element={
+                    <ProtectedRoute allowedRoles={['CLIENT']}>
+                      <OrdersPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/orders/payment/success"
+                  element={
+                    <ProtectedRoute allowedRoles={['CLIENT']}>
+                      <PaymentSuccessPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/orders/payment/fail"
+                  element={
+                    <ProtectedRoute allowedRoles={['CLIENT']}>
+                      <PaymentFailPage />
                     </ProtectedRoute>
                   }
                 />
@@ -77,6 +116,14 @@ function App() {
                   element={
                     <ProtectedRoute allowedRoles={['CLIENT']}>
                       <PublicNotificationsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/history"
+                  element={
+                    <ProtectedRoute allowedRoles={['CLIENT']}>
+                      <HistoryPage />
                     </ProtectedRoute>
                   }
                 />
@@ -136,6 +183,7 @@ function App() {
             </BrowserRouter>
           </CartProvider>
         </NotificationsProvider>
+        </ConfirmProvider>
       </AuthProvider>
     </ThemeProvider>
   );

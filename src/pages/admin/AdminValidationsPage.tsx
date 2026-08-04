@@ -6,6 +6,7 @@ import {
   updateCompanyVerification,
 } from '../../services/admin.service';
 import { ListToolbar } from '../../components/common/ListToolbar';
+import { useConfirm } from '../../context/ConfirmContext';
 
 type FilterTab = 'PENDING' | 'APPROVED' | 'REJECTED' | 'ALL';
 
@@ -31,6 +32,7 @@ function VerificationBadge({ status }: { status: VerificationStatus }) {
 }
 
 export function AdminValidationsPage() {
+  const { confirm } = useConfirm();
   const [companies, setCompanies] = useState<AdminCompany[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -86,9 +88,13 @@ export function AdminValidationsPage() {
   }, [companies, filter, search, typeFilter]);
 
   async function handleApprove(company: AdminCompany) {
-    if (!window.confirm(`Approve "${company.companyName}"? They will gain full company access.`)) {
-      return;
-    }
+    const ok = await confirm({
+      title: 'Approve company?',
+      message: `Approve "${company.companyName}"? They will gain full company access.`,
+      confirmLabel: 'Yes, approve',
+      danger: false,
+    });
+    if (!ok) return;
 
     setUpdatingId(company.companyId);
 
@@ -107,6 +113,14 @@ export function AdminValidationsPage() {
   }
 
   async function handleReject(company: AdminCompany) {
+    const ok = await confirm({
+      title: 'Reject company?',
+      message: `Reject "${company.companyName}"? You can optionally provide a reason next.`,
+      confirmLabel: 'Continue',
+      danger: true,
+    });
+    if (!ok) return;
+
     const reason = window.prompt(
       `Reject "${company.companyName}"? Optionally provide a reason:`,
     );

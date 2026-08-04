@@ -6,6 +6,7 @@ import {
 } from '../../services/admin.service';
 import { ListToolbar } from '../../components/common/ListToolbar';
 import { resolveUploadUrl } from '../../config/api';
+import { useConfirm } from '../../context/ConfirmContext';
 
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString();
@@ -33,6 +34,7 @@ function VerificationBadge({
 }
 
 export function AdminCompaniesPage() {
+  const { confirm } = useConfirm();
   const [companies, setCompanies] = useState<AdminCompany[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -94,9 +96,13 @@ export function AdminCompaniesPage() {
   }, [companies, search, statusFilter, typeFilter, ownerStatusFilter]);
 
   async function handleApprove(company: AdminCompany) {
-    if (!window.confirm(`Approve ${company.companyName}?`)) {
-      return;
-    }
+    const ok = await confirm({
+      title: 'Approve company?',
+      message: `Approve ${company.companyName}?`,
+      confirmLabel: 'Yes, approve',
+      danger: false,
+    });
+    if (!ok) return;
 
     setUpdatingId(company.companyId);
 
@@ -118,6 +124,14 @@ export function AdminCompaniesPage() {
   }
 
   async function handleReject(company: AdminCompany) {
+    const ok = await confirm({
+      title: 'Reject company?',
+      message: `Reject ${company.companyName}? You can optionally provide a reason next.`,
+      confirmLabel: 'Continue',
+      danger: true,
+    });
+    if (!ok) return;
+
     const reason = window.prompt(
       `Reject ${company.companyName}? Optionally provide a reason:`,
     );

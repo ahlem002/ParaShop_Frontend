@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Navbar } from '../components/layout/Navbar';
+import { PublicShell } from '../components/layout/PublicShell';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import type { PublicProduct } from '../types/product';
@@ -103,8 +103,7 @@ export function PublicProductDetailPage() {
   }
 
   return (
-    <>
-      <Navbar />
+    <PublicShell>
       <main className="container home-container">
         {loading && <p>Loading product...</p>}
 
@@ -242,6 +241,6 @@ export function PublicProductDetailPage() {
           </article>
         )}
       </main>
-    </>
+    </PublicShell>
   );
 }

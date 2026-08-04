@@ -54,6 +54,18 @@ export function Navbar() {
               )}
             </NavLink>
             <NavLink
+              to="/orders"
+              className={({ isActive }) => (isActive ? 'active' : undefined)}
+            >
+              Orders
+            </NavLink>
+            <NavLink
+              to="/history"
+              className={({ isActive }) => (isActive ? 'active' : undefined)}
+            >
+              History
+            </NavLink>
+            <NavLink
               to="/notifications"
               className={({ isActive }) => (isActive ? 'active' : undefined)}
             >

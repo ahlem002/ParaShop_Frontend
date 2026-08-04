@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Navbar } from '../components/layout/Navbar';
+import { PublicShell } from '../components/layout/PublicShell';
 import { useAuth } from '../context/AuthContext';
 import '../styles/pages/auth.css';
 
@@ -48,8 +48,7 @@ export function SignUpPage() {
   }
 
   return (
-    <>
-      <Navbar />
+    <PublicShell>
       <div className="auth-page">
         <div className="auth-card auth-card--wide">
           <h1>Create an account</h1>
@@ -197,6 +196,6 @@ export function SignUpPage() {
           </div>
         </div>
       </div>
-    </>
+    </PublicShell>
   );
 }

@@ -27,7 +27,6 @@ export function ProductCard({ product }: ProductCardProps) {
             src={imageUrl}
             alt={product.name}
             className="product-img-placeholder"
-            style={{ objectFit: 'cover', width: '100%', display: 'block' }}
           />
         ) : (
           <div className="product-img-placeholder" />

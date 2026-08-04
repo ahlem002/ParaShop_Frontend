@@ -1,12 +1,8 @@
-/* Profile page — mockup-inspired layout */
-
-.profile-public-shell {
-  max-width: 1400px !important;
-  width: 100%;
-}
-
-.settings-public-shell {
-  max-width: 950px !important;
+/* Client public shells — same width as home / products / cart */
+.profile-public-shell,
+.settings-public-shell,
+.notifications-public-shell {
+  max-width: 1480px !important;
   width: 100%;
 }
 
@@ -16,10 +12,9 @@
   margin: 0;
 }
 
-/* Must come after .profile-page so max-width is not overridden */
 .profile-page.settings-page {
-  max-width: 1000px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   width: 100%;
 }
 

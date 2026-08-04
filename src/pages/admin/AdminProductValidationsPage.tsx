@@ -7,6 +7,7 @@ import {
 } from '../../services/admin.service';
 import { resolveUploadUrl } from '../../config/api';
 import { ListToolbar } from '../../components/common/ListToolbar';
+import { useConfirm } from '../../context/ConfirmContext';
 
 type FilterTab = 'PENDING' | 'APPROVED' | 'REJECTED' | 'ALL';
 
@@ -27,6 +28,7 @@ function VerificationBadge({ status }: { status: VerificationStatus }) {
 }
 
 export function AdminProductValidationsPage() {
+  const { confirm } = useConfirm();
   const [products, setProducts] = useState<AdminProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -103,13 +105,13 @@ export function AdminProductValidationsPage() {
   }, [products, filter, search, categoryFilter, companyFilter]);
 
   async function handleApprove(product: AdminProduct) {
-    if (
-      !window.confirm(
-        `Approve "${product.name}"? It will appear on the home page.`,
-      )
-    ) {
-      return;
-    }
+    const ok = await confirm({
+      title: 'Approve product?',
+      message: `Approve "${product.name}"? It will appear on the home page.`,
+      confirmLabel: 'Yes, approve',
+      danger: false,
+    });
+    if (!ok) return;
 
     setUpdatingId(product.productId);
 
@@ -131,6 +133,14 @@ export function AdminProductValidationsPage() {
   }
 
   async function handleReject(product: AdminProduct) {
+    const ok = await confirm({
+      title: 'Reject product?',
+      message: `Reject "${product.name}"? You will enter a rejection reason next.`,
+      confirmLabel: 'Continue',
+      danger: true,
+    });
+    if (!ok) return;
+
     const reason = window.prompt(
       `Reject "${product.name}"? Enter a reason (required):`,
     );

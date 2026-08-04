@@ -1,6 +1,7 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useFavorites } from '../../context/FavoritesContext';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 import { NavAvatar } from './NavAvatar';
@@ -17,6 +18,7 @@ export function Navbar() {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
   const { cart } = useCart();
+  const { favorites } = useFavorites();
 
   function handleLogout() {
     logout();
@@ -50,6 +52,18 @@ export function Navbar() {
                 <span className="nav-cart-link__count">
                   {' '}
                   ({cart.itemCount > 99 ? '99+' : cart.itemCount})
+                </span>
+              )}
+            </NavLink>
+            <NavLink
+              to="/favorites"
+              className={({ isActive }) => (isActive ? 'active' : undefined)}
+            >
+              Favorites
+              {favorites.count > 0 && (
+                <span className="nav-cart-link__count">
+                  {' '}
+                  ({favorites.count > 99 ? '99+' : favorites.count})
                 </span>
               )}
             </NavLink>

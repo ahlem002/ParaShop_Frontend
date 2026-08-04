@@ -147,9 +147,15 @@ function applyAccentPalette(accent: AccentColor, theme: ThemeMode) {
     root.style.setProperty('--border-input', border);
     root.style.setProperty('--sidebar-client', primaryHover);
     root.style.setProperty('--sidebar-company', primary);
-    root.style.setProperty('--sidebar-admin-bg', '#ffffff');
-    root.style.setProperty('--sidebar-admin-border', border);
-    root.style.setProperty('--sidebar-admin-hover', surface);
+    root.style.setProperty('--sidebar-admin-bg', primary);
+    root.style.setProperty(
+      '--sidebar-admin-border',
+      hsl(h, s, Math.max(22, hoverL - 4)),
+    );
+    root.style.setProperty(
+      '--sidebar-admin-hover',
+      'rgba(255, 255, 255, 0.12)',
+    );
     root.style.setProperty(
       '--soft-shadow',
       `0 8px 28px ${hsl(h, Math.min(40, s), 28, 0.12)}`,
@@ -186,9 +192,18 @@ function applyAccentPalette(accent: AccentColor, theme: ThemeMode) {
   root.style.setProperty('--border-input', border);
   root.style.setProperty('--sidebar-client', darkPrimary);
   root.style.setProperty('--sidebar-company', darkHover);
-  root.style.setProperty('--sidebar-admin-bg', '#151520');
-  root.style.setProperty('--sidebar-admin-border', '#2a2a3a');
-  root.style.setProperty('--sidebar-admin-hover', '#222233');
+  root.style.setProperty(
+    '--sidebar-admin-bg',
+    hsl(h, darkS, Math.max(22, l - 8)),
+  );
+  root.style.setProperty(
+    '--sidebar-admin-border',
+    hsl(h, darkS, Math.max(12, l - 18)),
+  );
+  root.style.setProperty(
+    '--sidebar-admin-hover',
+    'rgba(255, 255, 255, 0.12)',
+  );
   root.style.setProperty('--soft-shadow', '0 8px 28px hsl(0 0% 0% / 0.45)');
   root.style.setProperty('--accent-icon-bg', soft);
   root.style.setProperty('--accent-icon-fg', darkHover);

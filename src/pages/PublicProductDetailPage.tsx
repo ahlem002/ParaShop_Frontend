@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Heart } from 'lucide-react';
 import { PublicShell } from '../components/layout/PublicShell';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useFavorites } from '../context/FavoritesContext';
 import type { PublicProduct } from '../types/product';
 import { getPublicProduct } from '../services/products.service';
 import { resolveUploadUrl } from '../config/api';
@@ -19,6 +21,7 @@ export function PublicProductDetailPage() {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
   const { addItem } = useCart();
+  const { isFavorite, toggle } = useFavorites();
   const [product, setProduct] = useState<PublicProduct | null>(null);
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -98,9 +101,33 @@ export function PublicProductDetailPage() {
         type: 'error',
         text: err instanceof Error ? err.message : 'Could not add to cart',
       });
+    } finally {
       setBusy(false);
     }
   }
+
+  async function handleToggleFavorite() {
+    if (!product || !requireClientLogin()) return;
+    setBusy(true);
+    setFeedback(null);
+    try {
+      const next = await toggle(product.productId);
+      const saved = next.productIds.includes(product.productId);
+      setFeedback({
+        type: 'ok',
+        text: saved ? 'Added to favorites.' : 'Removed from favorites.',
+      });
+    } catch (err) {
+      setFeedback({
+        type: 'error',
+        text: err instanceof Error ? err.message : 'Could not update favorites',
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const favorited = product ? isFavorite(product.productId) : false;
 
   return (
     <PublicShell>
@@ -215,6 +242,19 @@ export function PublicProductDetailPage() {
                   onClick={() => void handleBuyNow()}
                 >
                   Buy now
+                </button>
+                <button
+                  type="button"
+                  className={`btn btn-secondary${favorited ? ' is-favorite' : ''}`}
+                  disabled={busy}
+                  onClick={() => void handleToggleFavorite()}
+                >
+                  <Heart
+                    size={16}
+                    strokeWidth={2}
+                    fill={favorited ? 'currentColor' : 'none'}
+                  />
+                  {favorited ? 'Favorited' : 'Favorite'}
                 </button>
               </div>
 

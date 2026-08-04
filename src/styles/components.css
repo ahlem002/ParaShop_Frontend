@@ -562,6 +562,20 @@
   color: var(--primary-lavender);
 }
 
+.wishlist-btn.is-active {
+  color: #e11d48;
+  background: color-mix(in srgb, #e11d48 12%, white);
+}
+
+.wishlist-btn.is-active:hover {
+  color: #be123c;
+}
+
+.wishlist-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
 .company-name {
   font-size: 12px;
   font-weight: 500;

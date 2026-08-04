@@ -23,12 +23,12 @@
   /* Borders */
   --border-input: #e8e8ee;
 
-  /* Dashboard sidebars */
+  /* Dashboard sidebars — follow chrome theme */
   --sidebar-client: #4a3a72;
   --sidebar-company: #5c4a8a;
-  --sidebar-admin-bg: #ffffff;
-  --sidebar-admin-border: #e8e8ee;
-  --sidebar-admin-hover: #f7f7f9;
+  --sidebar-admin-bg: #5c4a8a;
+  --sidebar-admin-border: #3d3160;
+  --sidebar-admin-hover: rgba(255, 255, 255, 0.12);
 
   /* Component Border Radius */
   --radius-button: 999px;
@@ -83,9 +83,9 @@
 
   --sidebar-client: #a78bfa;
   --sidebar-company: #b8a4f0;
-  --sidebar-admin-bg: #151520;
-  --sidebar-admin-border: #2a2a3a;
-  --sidebar-admin-hover: #222233;
+  --sidebar-admin-bg: #4a3a72;
+  --sidebar-admin-border: #2a2140;
+  --sidebar-admin-hover: rgba(255, 255, 255, 0.12);
 
   --soft-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
   --navbar-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);

@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { NotificationsProvider } from './context/NotificationsContext';
 import { CartProvider } from './context/CartContext';
+import { FavoritesProvider } from './context/FavoritesContext';
 import { ConfirmProvider } from './context/ConfirmContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { AdminLayout } from './components/admin/AdminLayout';
@@ -39,6 +40,7 @@ import { PublicProfilePage } from './pages/PublicProfilePage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { PublicNotificationsPage } from './pages/PublicNotificationsPage';
 import { HistoryPage } from './pages/HistoryPage';
+import { FavoritesPage } from './pages/FavoritesPage';
 
 function App() {
   return (
@@ -47,6 +49,7 @@ function App() {
         <ConfirmProvider>
           <NotificationsProvider>
             <CartProvider>
+              <FavoritesProvider>
               <BrowserRouter>
               <Routes>
                 <Route path="/" element={<HomePage />} />
@@ -127,6 +130,14 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+                <Route
+                  path="/favorites"
+                  element={
+                    <ProtectedRoute allowedRoles={['CLIENT']}>
+                      <FavoritesPage />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
                 <Route path="/signup/company" element={<CompanySignUpPage />} />
@@ -181,6 +192,7 @@ function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </BrowserRouter>
+              </FavoritesProvider>
           </CartProvider>
         </NotificationsProvider>
         </ConfirmProvider>

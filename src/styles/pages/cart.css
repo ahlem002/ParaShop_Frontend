@@ -6,6 +6,14 @@
   margin-bottom: 24px;
 }
 
+.orders-filter-toolbar {
+  margin-bottom: 20px;
+}
+
+.orders-filter-toolbar .history-tabs {
+  width: 100%;
+}
+
 .cart-page__header h1 {
   font-size: 1.75rem;
   font-weight: 750;
@@ -271,6 +279,17 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 28px;
+  align-items: center;
+}
+
+.product-buy-actions .btn {
+  gap: 8px;
+}
+
+.product-buy-actions .btn.is-favorite {
+  color: #e11d48;
+  border-color: color-mix(in srgb, #e11d48 45%, var(--border-input));
+  background: color-mix(in srgb, #e11d48 8%, var(--white-cards));
 }
 
 .product-buy-actions .qty-field {

@@ -288,6 +288,19 @@
   line-height: 1.45;
 }
 
+.history-page--embedded {
+  padding-top: 0;
+  padding-bottom: 24px;
+}
+
+.history-page--embedded .history-page__header h1.admin-page-title {
+  margin-bottom: 6px;
+}
+
+.history-page--embedded .history-page__header p.admin-page-subtitle {
+  margin: 0;
+}
+
 @media (max-width: 720px) {
   .history-page__header {
     flex-direction: column;

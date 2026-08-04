@@ -162,6 +162,7 @@ function App() {
                     element={<CompanyProductFormPage />}
                   />
                   <Route path="notifications" element={<NotificationsPage />} />
+                  <Route path="history" element={<HistoryPage />} />
                   <Route path="profile" element={<ProfilePage />} />
                   <Route path="settings" element={<SettingsPage />} />
                 </Route>
@@ -185,6 +186,7 @@ function App() {
                   <Route path="revenue" element={<AdminRevenuePage />} />
                   <Route path="campaigns" element={<AdminCampaignsPage />} />
                   <Route path="analytics" element={<AdminAnalyticsPage />} />
+                  <Route path="history" element={<HistoryPage />} />
                   <Route path="notifications" element={<NotificationsPage />} />
                   <Route path="profile" element={<ProfilePage />} />
                   <Route path="settings" element={<SettingsPage />} />

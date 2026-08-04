@@ -4,6 +4,7 @@ import {
   Bell,
   Building2,
   ClipboardCheck,
+  History,
   LayoutDashboard,
   LogOut,
   Megaphone,
@@ -26,6 +27,7 @@ const navItems = [
   { label: 'Revenue', to: '/admin/revenue', icon: TrendingUp },
   { label: 'Campaigns', to: '/admin/campaigns', icon: Megaphone },
   { label: 'Analytics', to: '/admin/analytics', icon: BarChart3 },
+  { label: 'History', to: '/admin/history', icon: History },
   { label: 'Notifications', to: '/admin/notifications', icon: Bell },
   { label: 'Settings', to: '/admin/settings', icon: Settings },
 ];

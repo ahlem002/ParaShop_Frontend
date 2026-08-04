@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   ArrowDownUp,
   History,
@@ -26,6 +27,7 @@ import type { ActivityLogEntry, ActivityType } from '../types/activity';
 import { formatNotificationTime } from '../utils/notification-time';
 import '../styles/pages/history.css';
 import '../styles/pages/cart.css';
+import '../styles/pages/admin.css';
 
 type FilterTab = 'all' | 'account' | 'cart' | 'orders';
 
@@ -106,6 +108,10 @@ function toneFor(type: ActivityType) {
 }
 
 export function HistoryPage() {
+  const location = useLocation();
+  const embedded =
+    location.pathname.startsWith('/admin') ||
+    location.pathname.startsWith('/company');
   const { confirm } = useConfirm();
   const [entries, setEntries] = useState<ActivityLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -236,139 +242,154 @@ export function HistoryPage() {
     }
   }
 
-  return (
-    <PublicShell>
-      <main className="container home-container history-page">
-        <div className="history-page__header">
-          <div>
-            <h1>Activity history</h1>
-            <p>
-              Traceability log of profile changes, cart actions, and purchases.
-            </p>
-          </div>
-          {entries.length > 0 && (
-            <button
-              type="button"
-              className="btn btn-secondary history-page__clear"
-              onClick={() => void handleClearAll()}
-              disabled={clearing || loading}
-            >
-              <Trash2 size={16} strokeWidth={2} />
-              {clearing ? 'Clearing…' : 'Clear all'}
-            </button>
-          )}
+  const content = (
+    <div
+      className={
+        embedded
+          ? 'admin-page history-page history-page--embedded'
+          : 'container home-container history-page'
+      }
+    >
+      <div className="history-page__header">
+        <div>
+          <h1 className={embedded ? 'admin-page-title' : undefined}>
+            Activity history
+          </h1>
+          <p className={embedded ? 'admin-page-subtitle' : undefined}>
+            {embedded
+              ? 'Traceability log of logins, profile changes, and account security.'
+              : 'Traceability log of profile changes, cart actions, and purchases.'}
+          </p>
         </div>
-
-        <div className="history-toolbar">
-          <div className="history-tabs" role="tablist" aria-label="Filter history">
-            {(
-              [
-                ['all', 'All'],
-                ['account', 'Account'],
-                ['cart', 'Cart'],
-                ['orders', 'Orders'],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                role="tab"
-                aria-selected={tab === id}
-                className={
-                  tab === id
-                    ? 'history-tabs__tab history-tabs__tab--active'
-                    : 'history-tabs__tab'
-                }
-                onClick={() => setTab(id)}
-              >
-                {label}
-                <span className="history-tabs__count">{counts[id]}</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="history-toolbar__controls">
-            <label className="history-sort">
-              <ArrowDownUp size={15} strokeWidth={2} aria-hidden />
-              <span className="history-sort__label">Time</span>
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value as ActivitySort)}
-                aria-label="Sort by time"
-              >
-                <option value="newest">Newest first</option>
-                <option value="oldest">Oldest first</option>
-              </select>
-            </label>
-            <input
-              type="search"
-              className="history-search"
-              placeholder="Search activity…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              aria-label="Search activity"
-            />
-          </div>
-        </div>
-
-        {error && <div className="cart-page__error">{error}</div>}
-        {loading && <p className="history-page__status">Loading history…</p>}
-
-        {!loading && filtered.length === 0 && (
-          <div className="history-empty">
-            <History size={28} strokeWidth={1.75} />
-            <h2>No activity yet</h2>
-            <p>
-              When you update your profile, manage your cart, or complete a
-              purchase, it will show up here.
-            </p>
-          </div>
+        {entries.length > 0 && (
+          <button
+            type="button"
+            className="btn btn-secondary history-page__clear"
+            onClick={() => void handleClearAll()}
+            disabled={clearing || loading}
+          >
+            <Trash2 size={16} strokeWidth={2} />
+            {clearing ? 'Clearing…' : 'Clear all'}
+          </button>
         )}
+      </div>
 
-        <div className="history-timeline">
-          {grouped.map(([day, dayEntries]) => (
-            <section key={day} className="history-day">
-              <h2 className="history-day__label">{day}</h2>
-              <ul className="history-day__list">
-                {dayEntries.map((entry) => {
-                  const Icon = iconFor(entry.type);
-                  const tone = toneFor(entry.type);
-                  const deleting = busyId === entry.activityId;
-                  return (
-                    <li key={entry.activityId} className="history-item">
-                      <span
-                        className={`history-item__icon history-item__icon--${tone}`}
-                        aria-hidden
-                      >
-                        <Icon size={18} strokeWidth={1.85} />
-                      </span>
-                      <div className="history-item__body">
-                        <div className="history-item__top">
-                          <strong>{entry.title}</strong>
-                          <time dateTime={entry.createdAt}>
-                            {formatNotificationTime(entry.createdAt)}
-                          </time>
-                        </div>
-                        <p>{entry.message}</p>
-                      </div>
-                      <button
-                        type="button"
-                        className="history-item__delete"
-                        onClick={() => void handleDeleteOne(entry)}
-                        disabled={deleting || clearing}
-                        aria-label={`Delete ${entry.title}`}
-                        title="Delete"
-                      >
-                        <Trash2 size={16} strokeWidth={2} />
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
+      <div className="history-toolbar">
+        <div className="history-tabs" role="tablist" aria-label="Filter history">
+          {(
+            [
+              ['all', 'All'],
+              ['account', 'Account'],
+              ['cart', 'Cart'],
+              ['orders', 'Orders'],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={tab === id}
+              className={
+                tab === id
+                  ? 'history-tabs__tab history-tabs__tab--active'
+                  : 'history-tabs__tab'
+              }
+              onClick={() => setTab(id)}
+            >
+              {label}
+              <span className="history-tabs__count">{counts[id]}</span>
+            </button>
           ))}
         </div>
-      </main>
-    </PublicShell>
+
+        <div className="history-toolbar__controls">
+          <label className="history-sort">
+            <ArrowDownUp size={15} strokeWidth={2} aria-hidden />
+            <span className="history-sort__label">Time</span>
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as ActivitySort)}
+              aria-label="Sort by time"
+            >
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+            </select>
+          </label>
+          <input
+            type="search"
+            className="history-search"
+            placeholder="Search activity…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search activity"
+          />
+        </div>
+      </div>
+
+      {error && <div className="cart-page__error">{error}</div>}
+      {loading && <p className="history-page__status">Loading history…</p>}
+
+      {!loading && filtered.length === 0 && (
+        <div className="history-empty">
+          <History size={28} strokeWidth={1.75} />
+          <h2>No activity yet</h2>
+          <p>
+            {embedded
+              ? 'Logins, password changes, and profile updates will appear here.'
+              : 'When you update your profile, manage your cart, or complete a purchase, it will show up here.'}
+          </p>
+        </div>
+      )}
+
+      <div className="history-timeline">
+        {grouped.map(([day, dayEntries]) => (
+          <section key={day} className="history-day">
+            <h2 className="history-day__label">{day}</h2>
+            <ul className="history-day__list">
+              {dayEntries.map((entry) => {
+                const Icon = iconFor(entry.type);
+                const tone = toneFor(entry.type);
+                const deleting = busyId === entry.activityId;
+                return (
+                  <li key={entry.activityId} className="history-item">
+                    <span
+                      className={`history-item__icon history-item__icon--${tone}`}
+                      aria-hidden
+                    >
+                      <Icon size={18} strokeWidth={1.85} />
+                    </span>
+                    <div className="history-item__body">
+                      <div className="history-item__top">
+                        <strong>{entry.title}</strong>
+                        <time dateTime={entry.createdAt}>
+                          {formatNotificationTime(entry.createdAt)}
+                        </time>
+                      </div>
+                      <p>{entry.message}</p>
+                    </div>
+                    <button
+                      type="button"
+                      className="history-item__delete"
+                      onClick={() => void handleDeleteOne(entry)}
+                      disabled={deleting || clearing}
+                      aria-label={`Delete ${entry.title}`}
+                      title="Delete"
+                    >
+                      <Trash2 size={16} strokeWidth={2} />
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </div>
   );
+
+  if (embedded) {
+    return content;
+  }
+
+  return <PublicShell>{content}</PublicShell>;
 }

@@ -14,6 +14,7 @@ export interface CompanyProduct {
   images: string[] | null;
   price: number | string;
   stock: number;
+  soldOutAt?: string | null;
   notice: string | null;
   laboratory: string;
   verificationStatus: ProductVerificationStatus;

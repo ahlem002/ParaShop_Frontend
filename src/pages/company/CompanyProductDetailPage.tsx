@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import type { CompanyProduct } from '../../types/product';
-import { getCompanyProduct } from '../../services/products.service';
+import {
+  getCompanyProduct,
+  updateCompanyProductStock,
+} from '../../services/products.service';
 import { resolveUploadUrl } from '../../config/api';
 import { BackLink } from '../../components/layout/BackLink';
 import { ProductImageCarousel } from '../../components/product/ProductImageCarousel';
@@ -11,11 +14,21 @@ function formatPrice(value: number | string) {
   return `${Number(value).toFixed(2)} TND`;
 }
 
+function soldOutDeadline(soldOutAt: string | null | undefined) {
+  if (!soldOutAt) return null;
+  const end = new Date(soldOutAt);
+  end.setDate(end.getDate() + 10);
+  return end;
+}
+
 export function CompanyProductDetailPage() {
   const { productId } = useParams();
   const [product, setProduct] = useState<CompanyProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [stockDraft, setStockDraft] = useState('');
+  const [stockBusy, setStockBusy] = useState(false);
+  const [stockMessage, setStockMessage] = useState('');
 
   const loadProduct = useCallback(async () => {
     if (!productId) return;
@@ -26,6 +39,7 @@ export function CompanyProductDetailPage() {
     try {
       const data = await getCompanyProduct(productId);
       setProduct(data);
+      setStockDraft(String(data.stock));
     } catch {
       setError('Failed to load product.');
     } finally {
@@ -36,6 +50,34 @@ export function CompanyProductDetailPage() {
   useEffect(() => {
     loadProduct();
   }, [loadProduct]);
+
+  async function handleRefillStock() {
+    if (!product) return;
+    const next = Number(stockDraft);
+    if (!Number.isInteger(next) || next < 0) {
+      setStockMessage('Enter a whole number >= 0.');
+      return;
+    }
+
+    setStockBusy(true);
+    setStockMessage('');
+    try {
+      const updated = await updateCompanyProductStock(product.productId, next);
+      setProduct(updated);
+      setStockDraft(String(updated.stock));
+      setStockMessage(
+        updated.stock > 0
+          ? 'Stock updated. Product stays approved (no re-validation).'
+          : 'Stock set to 0 — product is sold out.',
+      );
+    } catch (err) {
+      setStockMessage(
+        err instanceof Error ? err.message : 'Could not update stock.',
+      );
+    } finally {
+      setStockBusy(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -55,6 +97,8 @@ export function CompanyProductDetailPage() {
       </div>
     );
   }
+
+  const deadline = soldOutDeadline(product.soldOutAt ?? null);
 
   return (
     <div className="admin-page">
@@ -106,6 +150,65 @@ export function CompanyProductDetailPage() {
         </div>
       )}
 
+      {product.stock <= 0 && (
+        <div className="admin-error" style={{ marginBottom: 16, textAlign: 'left' }}>
+          <strong>Sold out</strong>
+          <p style={{ marginTop: 8, marginBottom: 0 }}>
+            Clients cannot buy or add this product to cart.
+            {deadline
+              ? ` Refill before ${deadline.toLocaleDateString('en-GB')} or it will be deleted automatically.`
+              : ' Refill within 10 days or it will be deleted automatically.'}
+          </p>
+        </div>
+      )}
+
+      {product.stock > 0 && product.stock <= 5 && (
+        <div className="admin-page-card" style={{ marginBottom: 16 }}>
+          <p>
+            Low stock ({product.stock} left). Refill soon to avoid running out.
+          </p>
+        </div>
+      )}
+
+      <div className="admin-page-card" style={{ marginBottom: 16 }}>
+        <h2 style={{ marginTop: 0, fontSize: 18 }}>Refill stock</h2>
+        <p className="admin-page-subtitle" style={{ marginTop: 0 }}>
+          Updating stock here does not require admin re-validation.
+        </p>
+        <div
+          style={{
+            display: 'flex',
+            gap: 12,
+            alignItems: 'end',
+            flexWrap: 'wrap',
+          }}
+        >
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <label htmlFor="refill-stock">Quantity</label>
+            <input
+              id="refill-stock"
+              type="number"
+              min={0}
+              step={1}
+              value={stockDraft}
+              onChange={(e) => setStockDraft(e.target.value)}
+              style={{ width: 140 }}
+            />
+          </div>
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={stockBusy}
+            onClick={() => void handleRefillStock()}
+          >
+            {stockBusy ? 'Saving…' : 'Save stock'}
+          </button>
+        </div>
+        {stockMessage && (
+          <p style={{ marginBottom: 0, marginTop: 12 }}>{stockMessage}</p>
+        )}
+      </div>
+
       <div className="admin-page-card">
         <div className="admin-modal__grid">
           <div>
@@ -122,12 +225,18 @@ export function CompanyProductDetailPage() {
           </div>
           <div>
             <span className="admin-modal__label">Stock</span>
-            <p>{product.stock}</p>
+            <p>
+              {product.stock}
+              {product.stock <= 0 ? ' (sold out)' : ''}
+            </p>
           </div>
         </div>
 
         {product.description && (
-          <div className="admin-validation-card__description" style={{ marginTop: 24 }}>
+          <div
+            className="admin-validation-card__description"
+            style={{ marginTop: 24 }}
+          >
             <span className="admin-modal__label">Description</span>
             <p>{product.description}</p>
           </div>

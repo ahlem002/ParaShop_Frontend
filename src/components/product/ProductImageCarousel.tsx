@@ -64,7 +64,6 @@ export function ProductImageCarousel({
         )}
 
         <img
-          key={current}
           src={current}
           alt={alt}
           className="product-carousel__image"

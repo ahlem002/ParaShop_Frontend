@@ -206,25 +206,26 @@
 .product-carousel__stage {
   position: relative;
   width: 100%;
+  aspect-ratio: 1 / 1;
   border-radius: var(--radius-image);
   overflow: hidden;
   background: var(--bg-very-light);
 }
 
 .product-carousel__image {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
-  aspect-ratio: 1;
-  max-height: 340px;
+  height: 100%;
   object-fit: cover;
   animation: product-carousel-fade 0.35s ease;
 }
 
-.product-carousel--empty,
-.product-carousel--empty .product-carousel__stage {
-  min-height: 240px;
+.product-carousel--empty {
+  width: 100%;
   max-width: 340px;
-  aspect-ratio: 1;
+  aspect-ratio: 1 / 1;
   border-radius: var(--radius-image);
   background: var(--bg-very-light);
 }

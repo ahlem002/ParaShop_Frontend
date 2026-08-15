@@ -25,7 +25,6 @@ export function PublicProductDetailPage() {
   const { addItem } = useCart();
   const { isFavorite, toggle } = useFavorites();
   const [product, setProduct] = useState<PublicProduct | null>(null);
-  const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -43,7 +42,6 @@ export function PublicProductDetailPage() {
     try {
       const data = await getPublicProduct(productId);
       setProduct(data);
-      setQuantity(1);
     } catch {
       setError('Product not found or not available.');
     } finally {
@@ -60,7 +58,6 @@ export function PublicProductDetailPage() {
       ?.map((image) => resolveUploadUrl(image))
       .filter((url): url is string => Boolean(url)) ?? [];
 
-  const maxQty = Math.max(1, product?.stock ?? 1);
   const outOfStock = (product?.stock ?? 0) < 1;
 
   function requireClientLogin() {
@@ -76,7 +73,7 @@ export function PublicProductDetailPage() {
     setBusy(true);
     setFeedback(null);
     try {
-      await addItem(product.productId, quantity);
+      await addItem(product.productId, 1);
       setFeedback({ type: 'ok', text: 'Added to cart.' });
     } catch (err) {
       setFeedback({
@@ -90,9 +87,7 @@ export function PublicProductDetailPage() {
 
   function handleBuyNow() {
     if (!product || !requireClientLogin()) return;
-    navigate(
-      `/checkout?productId=${product.productId}&quantity=${quantity}`,
-    );
+    navigate(`/checkout?productId=${product.productId}&quantity=1`);
   }
 
   async function handleToggleFavorite() {
@@ -172,21 +167,6 @@ export function PublicProductDetailPage() {
               )}
 
               <div className="product-buy-actions">
-                <div className="qty-field">
-                  <label htmlFor="product-qty">Qty</label>
-                  <input
-                    id="product-qty"
-                    type="number"
-                    min={1}
-                    max={maxQty}
-                    value={quantity}
-                    disabled={outOfStock || busy}
-                    onChange={(event) => {
-                      const next = Number(event.target.value) || 1;
-                      setQuantity(Math.min(maxQty, Math.max(1, next)));
-                    }}
-                  />
-                </div>
                 <button
                   type="button"
                   className="btn btn-secondary"

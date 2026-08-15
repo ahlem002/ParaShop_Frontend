@@ -65,7 +65,7 @@ export function CompanyProductsPage() {
         return false;
       }
       if (stockFilter === 'IN' && product.stock <= 0) return false;
-      if (stockFilter === 'LOW' && !(product.stock > 0 && product.stock <= 10)) {
+      if (stockFilter === 'LOW' && !(product.stock > 0 && product.stock <= 5)) {
         return false;
       }
       if (stockFilter === 'OUT' && product.stock > 0) return false;
@@ -165,7 +165,7 @@ export function CompanyProductsPage() {
               options: [
                 { value: 'ALL', label: 'All stock' },
                 { value: 'IN', label: 'In stock' },
-                { value: 'LOW', label: 'Low stock (≤ 10)' },
+                { value: 'LOW', label: 'Low stock (≤ 5)' },
                 { value: 'OUT', label: 'Out of stock' },
               ],
             },
@@ -214,7 +214,13 @@ export function CompanyProductsPage() {
                       <td>{product.name}</td>
                       <td>{product.category?.name ?? '—'}</td>
                       <td>{formatPrice(product.price)}</td>
-                      <td>{product.stock}</td>
+                      <td>
+                        {product.stock <= 0
+                          ? 'Sold out'
+                          : product.stock <= 5
+                            ? `${product.stock} (low)`
+                            : product.stock}
+                      </td>
                       <td>
                         <span
                           className={`admin-badge admin-badge--${product.verificationStatus.toLowerCase()}`}

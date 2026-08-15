@@ -522,15 +522,17 @@
 }
 
 .product-img-placeholder {
-  aspect-ratio: 1;
+  aspect-ratio: 1 / 1;
   width: 100%;
   height: auto;
+  max-height: none;
   background-color: var(--bg-very-light);
   border-radius: var(--shop-card-image-radius);
   margin-bottom: 10px;
   overflow: hidden;
   object-fit: cover;
   display: block;
+  flex-shrink: 0;
 }
 
 .product-details {

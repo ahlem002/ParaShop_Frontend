@@ -58,10 +58,16 @@ function iconForType(type: NotificationType) {
     case 'PRODUCT_APPROVED':
       return Check;
     case 'PRODUCT_REJECTED':
+    case 'PRODUCT_AUTO_DELETED':
       return XCircle;
+    case 'PRODUCT_LOW_STOCK':
+    case 'PRODUCT_SOLD_OUT':
+      return Package;
     case 'ORDER_UPDATED':
+    case 'DELIVERY_ASSIGNED':
       return Truck;
     case 'NEW_ORDER':
+    case 'DRIVER_RATED':
       return ShoppingBag;
     default:
       return Bell;
@@ -77,10 +83,16 @@ function toneForType(type: NotificationType) {
     case 'PRODUCT_APPROVED':
       return 'green';
     case 'PRODUCT_REJECTED':
+    case 'PRODUCT_SOLD_OUT':
+    case 'PRODUCT_AUTO_DELETED':
+      return 'yellow';
+    case 'PRODUCT_LOW_STOCK':
       return 'yellow';
     case 'ORDER_UPDATED':
+    case 'DELIVERY_ASSIGNED':
       return 'blue';
     case 'NEW_ORDER':
+    case 'DRIVER_RATED':
       return 'green';
     default:
       return 'purple';
@@ -95,11 +107,19 @@ function matchesTab(item: AppNotification, tab: NotificationFilterTab) {
     return (
       item.type === 'PRODUCT_PENDING' ||
       item.type === 'PRODUCT_APPROVED' ||
-      item.type === 'PRODUCT_REJECTED'
+      item.type === 'PRODUCT_REJECTED' ||
+      item.type === 'PRODUCT_LOW_STOCK' ||
+      item.type === 'PRODUCT_SOLD_OUT' ||
+      item.type === 'PRODUCT_AUTO_DELETED'
     );
   }
   if (tab === 'system') {
-    return item.type === 'ORDER_UPDATED' || item.type === 'NEW_ORDER';
+    return (
+      item.type === 'ORDER_UPDATED' ||
+      item.type === 'NEW_ORDER' ||
+      item.type === 'DELIVERY_ASSIGNED' ||
+      item.type === 'DRIVER_RATED'
+    );
   }
   return false;
 }

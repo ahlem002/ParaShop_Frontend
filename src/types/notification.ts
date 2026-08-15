@@ -3,8 +3,13 @@ export type NotificationType =
   | 'PRODUCT_PENDING'
   | 'PRODUCT_APPROVED'
   | 'PRODUCT_REJECTED'
+  | 'PRODUCT_LOW_STOCK'
+  | 'PRODUCT_SOLD_OUT'
+  | 'PRODUCT_AUTO_DELETED'
   | 'ORDER_UPDATED'
-  | 'NEW_ORDER';
+  | 'NEW_ORDER'
+  | 'DELIVERY_ASSIGNED'
+  | 'DRIVER_RATED';
 
 export interface AppNotification {
   notificationId: string;

@@ -65,6 +65,13 @@ export function updateCompanyProduct(
   });
 }
 
+export function updateCompanyProductStock(productId: string, stock: number) {
+  return authFetch<CompanyProduct>(`/company/products/${productId}/stock`, {
+    method: 'PATCH',
+    body: JSON.stringify({ stock }),
+  });
+}
+
 export function deleteCompanyProduct(productId: string) {
   return authFetch<{ deleted: boolean }>(`/company/products/${productId}`, {
     method: 'DELETE',

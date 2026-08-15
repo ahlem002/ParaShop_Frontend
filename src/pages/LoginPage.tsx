@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { PublicShell } from '../components/layout/PublicShell';
+import { BackLink } from '../components/layout/BackLink';
 import { GoogleSignInButton } from '../components/auth/GoogleSignInButton';
 import { useAuth } from '../context/AuthContext';
 import '../styles/pages/auth.css';
@@ -186,17 +187,14 @@ export function LoginPage() {
             </button>
 
             {tempToken && (
-              <button
-                type="button"
-                className="btn btn-secondary"
+              <BackLink
+                label="Back to login"
                 onClick={() => {
                   setTempToken(null);
                   setTwoFactorCode('');
                   setError('');
                 }}
-              >
-                Back to login
-              </button>
+              />
             )}
           </form>
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { PublicShell } from '../components/layout/PublicShell';
+import { BackLink } from '../components/layout/BackLink';
 import { useCart } from '../context/CartContext';
 import {
   confirmFakePayment,
@@ -90,6 +91,12 @@ export function ConfirmPaymentPage() {
   return (
     <PublicShell>
       <main className="container home-container checkout-page">
+        {orderId && (
+          <BackLink
+            to={`/checkout/payment?orderId=${orderId}`}
+            label="Back to card details"
+          />
+        )}
         <div className="checkout-page__header">
           <div>
             <p className="checkout-page__eyebrow">Final step</p>
@@ -175,16 +182,6 @@ export function ConfirmPaymentPage() {
                 onClick={() => void handleConfirm()}
               >
                 {submitting ? 'Confirming...' : 'Confirm payment'}
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary checkout-summary__pay"
-                style={{ marginTop: 10 }}
-                onClick={() =>
-                  navigate(`/checkout/payment?orderId=${order.orderId}`)
-                }
-              >
-                Back to card details
               </button>
             </aside>
           </div>

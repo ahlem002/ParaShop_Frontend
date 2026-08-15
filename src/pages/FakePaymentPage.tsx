@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { PublicShell } from '../components/layout/PublicShell';
+import { BackLink } from '../components/layout/BackLink';
 import { useAuth } from '../context/AuthContext';
 import { getMyOrder } from '../services/orders.service';
 import type { OrderView } from '../types/order';
@@ -193,6 +194,7 @@ export function FakePaymentPage() {
   return (
     <PublicShell>
       <main className="container home-container checkout-page">
+        <BackLink to="/orders" label="Back to orders" />
         <div className="checkout-page__header">
           <div>
             <p className="checkout-page__eyebrow">Payment</p>

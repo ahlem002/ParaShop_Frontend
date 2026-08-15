@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { BackLink } from '../../components/layout/BackLink';
 import type { ProductCategory } from '../../types/product';
 import {
   createCompanyProduct,
@@ -112,6 +113,7 @@ export function CompanyProductFormPage() {
 
   return (
     <div className="admin-page">
+      <BackLink to="/company/products" label="Back to products" />
       <h1 className="admin-page-title">
         {isEdit ? 'Edit product' : 'Add product'}
       </h1>
@@ -253,9 +255,6 @@ export function CompanyProductFormPage() {
             <button type="submit" className="btn btn-primary" disabled={saving}>
               {saving ? 'Saving...' : isEdit ? 'Save changes' : 'Create product'}
             </button>
-            <Link to="/company/products" className="btn btn-secondary">
-              Cancel
-            </Link>
           </div>
         </form>
       </div>

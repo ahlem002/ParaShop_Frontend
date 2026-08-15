@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { PublicShell } from '../components/layout/PublicShell';
 import { ProductCard } from '../components/home/ProductCard';
 import { ListToolbar } from '../components/common/ListToolbar';
@@ -220,12 +220,6 @@ export function ProductsPage() {
               ))}
             </div>
           )}
-
-          <div style={{ marginTop: 32 }}>
-            <Link to="/" className="btn btn-secondary">
-              Back to home
-            </Link>
-          </div>
         </section>
       </main>
     </PublicShell>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { PublicShell } from '../components/layout/PublicShell';
+import { BackLink } from '../components/layout/BackLink';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { AddressMapPicker } from '../components/checkout/AddressMapPicker';
@@ -205,9 +206,6 @@ export function CheckoutPage() {
               try again.
             </p>
             <div className="checkout-empty__actions">
-              <Link to="/cart" className="btn btn-secondary">
-                Back to cart
-              </Link>
               <Link to="/products" className="btn btn-primary">
                 Browse products
               </Link>
@@ -224,12 +222,15 @@ export function CheckoutPage() {
   const backTo = isBuyNow
     ? `/products/${buyNowProductId}`
     : '/cart';
-  const backLabel = isBuyNow ? 'Back to product' : 'Back to cart';
   const maxQty = Math.max(1, product?.stock ?? 1);
 
   return (
     <PublicShell>
       <main className="container home-container checkout-page">
+        <BackLink
+          to={backTo}
+          label={isBuyNow ? 'Back to product' : 'Back to cart'}
+        />
         <div className="checkout-page__header">
           <div>
             <p className="checkout-page__eyebrow">
@@ -238,13 +239,6 @@ export function CheckoutPage() {
             <h1>{title}</h1>
             <p>Confirm quantity, delivery details, and total before payment.</p>
           </div>
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => navigate(backTo)}
-          >
-            {backLabel}
-          </button>
         </div>
 
         {error && <div className="cart-page__error">{error}</div>}

@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom';
-
 export function SiteFooter() {
   const year = new Date().getFullYear();
 
@@ -14,15 +12,6 @@ export function SiteFooter() {
             Trusted pharmacy & wellness marketplace
           </p>
         </div>
-        <nav className="site-footer__links" aria-label="Footer">
-          <Link to="/">Home</Link>
-          <Link to="/products">Products</Link>
-          <Link to="/cart">Cart</Link>
-          <Link to="/favorites">Favorites</Link>
-          <Link to="/orders">Orders</Link>
-          <Link to="/history">History</Link>
-          <Link to="/login">Login</Link>
-        </nav>
       </div>
     </footer>
   );

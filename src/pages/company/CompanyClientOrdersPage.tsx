@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Package, Truck } from 'lucide-react';
+import { Package, Truck } from 'lucide-react';
 import { resolveUploadUrl } from '../../config/api';
+import { BackLink } from '../../components/layout/BackLink';
 import { useConfirm } from '../../context/ConfirmContext';
 import {
   getCompanyOrders,
@@ -92,10 +93,7 @@ export function CompanyClientOrdersPage() {
   if (!client) {
     return (
       <div className="admin-page">
-        <Link to="/company/orders" className="admin-back-link">
-          <ArrowLeft size={16} strokeWidth={2} />
-          Back to order management
-        </Link>
+        <BackLink to="/company/orders" label="Back to order management" />
         <h1 className="admin-page-title">Client orders</h1>
         <div className="admin-empty">No orders found for this client.</div>
       </div>
@@ -104,10 +102,7 @@ export function CompanyClientOrdersPage() {
 
   return (
     <div className="admin-page">
-      <Link to="/company/orders" className="admin-back-link">
-        <ArrowLeft size={16} strokeWidth={2} />
-        Back to order management
-      </Link>
+      <BackLink to="/company/orders" label="Back to order management" />
 
       <div className="admin-page-heading">
         <div>

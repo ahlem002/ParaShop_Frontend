@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { BackLink } from '../../components/layout/BackLink';
 import {
   confirmCompanyPromotionPayment,
   getCompanyPromotionCampaigns,
@@ -99,14 +100,15 @@ export function CompanyPromotionPaymentPage() {
   if (!campaign) {
     return (
       <div className="admin-page">
+        <BackLink to="/company/promotions" label="Back to promotions" />
         <div className="admin-error">{error || 'Campaign not found.'}</div>
-        <Link to="/company/promotions">Back</Link>
       </div>
     );
   }
 
   return (
     <div className="admin-page">
+      <BackLink to="/company/promotions" label="Back to promotions" />
       <h1 className="admin-page-title">Pay for promotion</h1>
       <p className="admin-page-subtitle">
         Demo card payment — {campaign.offerType} for{' '}
@@ -165,9 +167,6 @@ export function CompanyPromotionPaymentPage() {
             </div>
           </div>
           <div className="admin-modal__actions">
-            <Link to="/company/promotions" className="btn btn-secondary">
-              Cancel
-            </Link>
             <button type="submit" className="btn btn-primary" disabled={busy}>
               {busy ? 'Paying...' : `Pay ${formatPrice(campaign.totalPrice)}`}
             </button>

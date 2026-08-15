@@ -44,7 +44,8 @@ body {
 .site-footer__inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  text-align: center;
   gap: 20px;
   flex-wrap: wrap;
   padding-top: 0;
@@ -63,27 +64,8 @@ body {
   color: var(--chrome-fg-muted);
 }
 
-.site-footer__links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.site-footer__links a {
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--chrome-fg-muted);
-  transition: color 0.15s ease;
-}
-
-.site-footer__links a:hover {
-  color: var(--chrome-fg);
-}
-
 @media (max-width: 640px) {
   .site-footer__inner {
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
   }
 }

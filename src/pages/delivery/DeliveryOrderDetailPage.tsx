@@ -1,5 +1,6 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { BackLink } from '../../components/layout/BackLink';
 import { useConfirm } from '../../context/ConfirmContext';
 import {
   getDeliveryOrder,
@@ -93,8 +94,8 @@ export function DeliveryOrderDetailPage() {
   if (!order) {
     return (
       <div className="admin-page">
+        <BackLink to="/delivery/orders" label="Back to deliveries" />
         <div className="admin-error">{error || 'Order not found.'}</div>
-        <Link to="/delivery/orders">Back</Link>
       </div>
     );
   }
@@ -109,9 +110,7 @@ export function DeliveryOrderDetailPage() {
 
   return (
     <div className="admin-page">
-      <Link to="/delivery/orders" className="admin-back-link">
-        ← Back to deliveries
-      </Link>
+      <BackLink to="/delivery/orders" label="Back to deliveries" />
       <div className="admin-page-heading">
         <div>
           <h1 className="admin-page-title">

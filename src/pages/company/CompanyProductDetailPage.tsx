@@ -3,6 +3,9 @@ import { Link, useParams } from 'react-router-dom';
 import type { CompanyProduct } from '../../types/product';
 import { getCompanyProduct } from '../../services/products.service';
 import { resolveUploadUrl } from '../../config/api';
+import { BackLink } from '../../components/layout/BackLink';
+import { ProductImageCarousel } from '../../components/product/ProductImageCarousel';
+import '../../styles/pages/home.css';
 
 function formatPrice(value: number | string) {
   return `${Number(value).toFixed(2)} TND`;
@@ -46,6 +49,7 @@ export function CompanyProductDetailPage() {
   if (error || !product) {
     return (
       <div className="admin-page">
+        <BackLink to="/company/products" label="Back to products" />
         <h1 className="admin-page-title">Product details</h1>
         <div className="admin-error">{error || 'Product not found.'}</div>
       </div>
@@ -54,6 +58,7 @@ export function CompanyProductDetailPage() {
 
   return (
     <div className="admin-page">
+      <BackLink to="/company/products" label="Back to products" />
       <div className="admin-page-heading">
         <h1 className="admin-page-title">{product.name}</h1>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -129,16 +134,14 @@ export function CompanyProductDetailPage() {
         )}
 
         {product.images && product.images.length > 0 && (
-          <div style={{ marginTop: 24 }}>
+          <div style={{ marginTop: 24, maxWidth: 420 }}>
             <span className="admin-modal__label">Images</span>
-            <div className="product-image-preview">
-              {product.images.map((image) => {
-                const url = resolveUploadUrl(image);
-                return url ? (
-                  <img key={image} src={url} alt={product.name} className="product-thumb product-thumb--lg" />
-                ) : null;
-              })}
-            </div>
+            <ProductImageCarousel
+              images={product.images
+                .map((image) => resolveUploadUrl(image))
+                .filter((url): url is string => Boolean(url))}
+              alt={product.name}
+            />
           </div>
         )}
 
@@ -147,12 +150,6 @@ export function CompanyProductDetailPage() {
           <p style={{ whiteSpace: 'pre-wrap' }}>
             {product.notice?.trim() ? product.notice : '—'}
           </p>
-        </div>
-
-        <div style={{ marginTop: 28 }}>
-          <Link to="/company/products" className="btn btn-secondary">
-            Back to products
-          </Link>
         </div>
       </div>
     </div>

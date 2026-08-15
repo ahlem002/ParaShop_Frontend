@@ -645,3 +645,37 @@
   background-color: rgba(239, 68, 68, 0.12);
   color: var(--error);
 }
+
+.page-back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 12px;
+  border: 1px solid color-mix(in srgb, var(--primary-lavender) 18%, var(--border-input));
+  border-radius: 12px;
+  background: var(--white-cards);
+  color: var(--text-main);
+  text-decoration: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.page-back-link:hover {
+  color: var(--primary-lavender);
+  border-color: var(--primary-lavender);
+  background: color-mix(in srgb, var(--primary-lavender) 8%, white);
+  transform: translateX(-2px);
+}
+
+.page-back-link:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--primary-lavender) 55%, white);
+  outline-offset: 2px;
+}
+

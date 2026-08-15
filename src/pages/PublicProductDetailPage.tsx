@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Heart } from 'lucide-react';
 import { PublicShell } from '../components/layout/PublicShell';
+import { BackLink } from '../components/layout/BackLink';
+import { ProductImageCarousel } from '../components/product/ProductImageCarousel';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useFavorites } from '../context/FavoritesContext';
@@ -23,7 +25,6 @@ export function PublicProductDetailPage() {
   const { addItem } = useCart();
   const { isFavorite, toggle } = useFavorites();
   const [product, setProduct] = useState<PublicProduct | null>(null);
-  const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -42,7 +43,6 @@ export function PublicProductDetailPage() {
     try {
       const data = await getPublicProduct(productId);
       setProduct(data);
-      setActiveImage(0);
       setQuantity(1);
     } catch {
       setError('Product not found or not available.');
@@ -60,7 +60,6 @@ export function PublicProductDetailPage() {
       ?.map((image) => resolveUploadUrl(image))
       .filter((url): url is string => Boolean(url)) ?? [];
 
-  const mainImage = images[activeImage] ?? images[0] ?? null;
   const maxQty = Math.max(1, product?.stock ?? 1);
   const outOfStock = (product?.stock ?? 0) < 1;
 
@@ -122,48 +121,21 @@ export function PublicProductDetailPage() {
   return (
     <PublicShell>
       <main className="container home-container">
+        <BackLink to="/products" label="Back to products" />
+
         {loading && <p>Loading product...</p>}
 
         {!loading && (error || !product) && (
           <div className="auth-card" style={{ maxWidth: 560, margin: '40px auto' }}>
             <h1>Product unavailable</h1>
             <p>{error || 'This product could not be found.'}</p>
-            <Link to="/products" className="btn btn-primary">
-              Back to products
-            </Link>
           </div>
         )}
 
         {!loading && product && (
           <article className="public-product-detail">
             <div className="public-product-detail__media">
-              {mainImage ? (
-                <img
-                  src={mainImage}
-                  alt={product.name}
-                  className="public-product-detail__image"
-                />
-              ) : (
-                <div className="public-product-detail__image public-product-detail__image--empty" />
-              )}
-
-              {images.length > 0 && (
-                <div className="public-product-detail__thumbs">
-                  {images.map((url, index) => (
-                    <button
-                      key={url}
-                      type="button"
-                      className={`public-product-detail__thumb${
-                        index === activeImage ? ' is-active' : ''
-                      }`}
-                      onClick={() => setActiveImage(index)}
-                      aria-label={`View image ${index + 1}`}
-                    >
-                      <img src={url} alt="" />
-                    </button>
-                  ))}
-                </div>
-              )}
+              <ProductImageCarousel images={images} alt={product.name} />
             </div>
 
             <div className="public-product-detail__info">
@@ -181,9 +153,7 @@ export function PublicProductDetailPage() {
                 )}
                 <span>Stock: {product.stock}</span>
                 {images.length > 1 && (
-                  <span>
-                    {activeImage + 1} / {images.length} images
-                  </span>
+                  <span>{images.length} images</span>
                 )}
               </div>
 
@@ -261,12 +231,6 @@ export function PublicProductDetailPage() {
                   )}
                 </p>
               )}
-
-              <div className="hero-buttons" style={{ marginTop: 20 }}>
-                <Link to="/products" className="btn btn-secondary">
-                  Back to products
-                </Link>
-              </div>
             </div>
           </article>
         )}

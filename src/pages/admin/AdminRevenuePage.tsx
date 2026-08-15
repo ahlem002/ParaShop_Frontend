@@ -17,6 +17,8 @@ function offerLabel(offerType: string) {
       return 'Home spotlight';
     case 'PACK':
       return 'Product pack';
+    case 'AI_BOOST':
+      return 'AI assistant boost';
     default:
       return offerType;
   }

@@ -2,7 +2,8 @@ export type PromotionOfferType =
   | 'CATEGORY_BOOST'
   | 'SEARCH_BOOST'
   | 'HOME_SPOTLIGHT'
-  | 'PACK';
+  | 'PACK'
+  | 'AI_BOOST';
 
 export type PromotionStatus =
   | 'PENDING_PAYMENT'

@@ -182,6 +182,17 @@ export function CompanyPromotionsPage() {
                   </option>
                 ))}
               </select>
+              {offers.find((o) => o.offerType === offerType)?.description ? (
+                <p
+                  style={{
+                    margin: '8px 0 0',
+                    fontSize: 13,
+                    color: 'var(--muted, #64748b)',
+                  }}
+                >
+                  {offers.find((o) => o.offerType === offerType)?.description}
+                </p>
+              ) : null}
             </div>
             <div className="form-group">
               <label htmlFor="promo-days">Duration (days)</label>

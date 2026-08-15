@@ -7,6 +7,7 @@ export type AiChatSuggestion = {
   image: string | null;
   category: string | null;
   laboratory: string;
+  sponsored?: boolean;
 };
 
 export type AiChatResponse = {

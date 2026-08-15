@@ -36,6 +36,8 @@ import { AdminUsersPage } from './pages/admin/AdminUsersPage';
 import { AdminClientsPage } from './pages/admin/AdminClientsPage';
 import { AdminDriversPage } from './pages/admin/AdminDriversPage';
 import { AdminCompaniesPage } from './pages/admin/AdminCompaniesPage';
+import { AdminProductManagementPage } from './pages/admin/AdminProductManagementPage';
+import { AdminCompanyProductsPage } from './pages/admin/AdminCompanyProductsPage';
 import { AdminRevenuePage } from './pages/admin/AdminRevenuePage';
 import { AdminCampaignsPage } from './pages/admin/AdminCampaignsPage';
 import { CompanyDeliveryPage } from './pages/company/CompanyDeliveryPage';
@@ -266,6 +268,14 @@ function App() {
                   <Route path="clients" element={<AdminClientsPage />} />
                   <Route path="drivers" element={<AdminDriversPage />} />
                   <Route path="companies" element={<AdminCompaniesPage />} />
+                  <Route
+                    path="product-management"
+                    element={<AdminProductManagementPage />}
+                  />
+                  <Route
+                    path="product-management/:companyId"
+                    element={<AdminCompanyProductsPage />}
+                  />
                   <Route path="revenue" element={<AdminRevenuePage />} />
                   <Route path="campaigns" element={<AdminCampaignsPage />} />
                   <Route path="history" element={<HistoryPage />} />

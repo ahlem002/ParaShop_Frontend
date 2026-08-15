@@ -392,7 +392,10 @@ export function AiChatWidget() {
                                     </div>
                                     <div>
                                       <strong>{item.name}</strong>
-                                      <span>{money(item.price)}</span>
+                                      <span>
+                                        {money(item.price)}
+                                        {item.sponsored ? ' · Featured' : ''}
+                                      </span>
                                     </div>
                                   </Link>
                                 );

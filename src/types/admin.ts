@@ -1,6 +1,6 @@
 export type UserAccountStatus = 'ACTIVE' | 'BLOCKED';
 export type VerificationStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
-export type AdminUserRole = 'CLIENT' | 'COMPANY' | 'ADMIN';
+export type AdminUserRole = 'CLIENT' | 'COMPANY' | 'ADMIN' | 'DELIVERY';
 
 export interface AdminUser {
   userId: string;
@@ -12,6 +12,8 @@ export interface AdminUser {
   gender: string | null;
   role: AdminUserRole;
   status: UserAccountStatus;
+  mustChangePassword?: boolean;
+  profileCompleted?: boolean;
   companyVerificationStatus: VerificationStatus | null;
   createdAt: string;
 }

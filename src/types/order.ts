@@ -5,7 +5,8 @@ export type OrderStatus =
   | 'CANCELLED'
   | 'PROCESSING'
   | 'SHIPPED'
-  | 'DELIVERED';
+  | 'DELIVERED'
+  | 'RETURNED';
 
 export interface OrderItemView {
   orderItemId: string;
@@ -25,7 +26,16 @@ export interface OrderClientView {
   phoneNumber: string | null;
 }
 
-export type CompanyOrderNextStatus = 'PROCESSING' | 'SHIPPED' | 'DELIVERED';
+export interface OrderDeliveryView {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string | null;
+}
+
+export type CompanyOrderNextStatus = 'PROCESSING';
+
+export type DeliveryOrderNextStatus = 'DELIVERED' | 'RETURNED';
 
 export interface OrderView {
   orderId: string;
@@ -37,20 +47,51 @@ export interface OrderView {
   flouciPaymentId: string | null;
   shippingAddress: string | null;
   shippingPhone?: string | null;
+  deliveryNote?: string | null;
+  deliveredAt?: string | null;
+  returnedAt?: string | null;
   paidAt: string | null;
   createdAt: string;
+  delivery?: OrderDeliveryView | null;
   company: {
     companyId: string;
     companyName: string;
+    address?: string | null;
+    phoneNumber?: string | null;
   };
   items: OrderItemView[];
   paymentVerified?: boolean;
   paymentStatus?: string;
+  canRateDelivery?: boolean;
+  myDeliveryRating?: { rating: number; comment: string | null } | null;
 }
 
 export interface CompanyOrderView extends OrderView {
   client: OrderClientView;
   nextStatuses: CompanyOrderNextStatus[];
+  canAssignDriver?: boolean;
+}
+
+export interface DeliveryOrderView extends OrderView {
+  client: OrderClientView;
+  canMarkDelivered?: boolean;
+  canMarkReturned?: boolean;
+}
+
+export interface AvailableDriverView {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string | null;
+  isFree: boolean;
+  averageRating: number | null;
+  ratingCount: number;
+  recentNotes: {
+    rating: number;
+    comment: string | null;
+    createdAt: string;
+  }[];
 }
 
 export interface CheckoutResponse {

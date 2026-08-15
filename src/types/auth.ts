@@ -1,4 +1,4 @@
-export type UserRole = 'CLIENT' | 'COMPANY' | 'ADMIN';
+export type UserRole = 'CLIENT' | 'COMPANY' | 'ADMIN' | 'DELIVERY';
 
 export type VerificationStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
@@ -27,6 +27,8 @@ export interface AuthUser {
   profileImage?: string | null;
   createdAt?: string | null;
   twoFactorEnabled?: boolean;
+  mustChangePassword?: boolean;
+  profileCompleted?: boolean;
   savedPaymentMethod?: {
     cardName: string | null;
     cardNumber: string | null;

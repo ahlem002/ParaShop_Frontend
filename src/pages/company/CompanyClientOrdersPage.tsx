@@ -163,14 +163,19 @@ export function CompanyClientOrdersPage() {
                         disabled={busy}
                         onClick={() => void handleStatusUpdate(order, next)}
                       >
-                        {next === 'SHIPPED' || next === 'DELIVERED' ? (
-                          <Truck size={14} strokeWidth={2} />
-                        ) : (
-                          <Package size={14} strokeWidth={2} />
-                        )}
+                        <Package size={14} strokeWidth={2} />
                         {busy ? '…' : nextActionLabel(next)}
                       </button>
                     ))}
+                    {order.status === 'PROCESSING' && (
+                      <Link
+                        to="/company/delivery"
+                        className="admin-btn-sm admin-btn-sm--primary"
+                      >
+                        <Truck size={14} strokeWidth={2} />
+                        Assign driver
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>

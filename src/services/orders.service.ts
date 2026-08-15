@@ -1,8 +1,11 @@
 import { authFetch } from '../config/api';
 import type {
+  AvailableDriverView,
   CheckoutResponse,
   CompanyOrderNextStatus,
   CompanyOrderView,
+  DeliveryOrderNextStatus,
+  DeliveryOrderView,
   OrderView,
 } from '../types/order';
 
@@ -89,5 +92,66 @@ export function updateCompanyOrderStatus(
   return authFetch<CompanyOrderView>(`/company/orders/${orderId}/status`, {
     method: 'PATCH',
     body: JSON.stringify({ status }),
+  });
+}
+
+export function getAvailableDrivers(freeOnly = false) {
+  const query = freeOnly ? '?freeOnly=true' : '';
+  return authFetch<AvailableDriverView[]>(
+    `/company/orders/drivers/available${query}`,
+  );
+}
+
+export function assignDriverToOrder(orderId: string, deliveryUserId: string) {
+  return authFetch<CompanyOrderView>(
+    `/company/orders/${orderId}/assign-driver`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ deliveryUserId }),
+    },
+  );
+}
+
+export function getDeliveryOrders(scope: 'active' | 'history' | 'all' = 'all') {
+  return authFetch<DeliveryOrderView[]>(
+    `/delivery/orders?scope=${scope}`,
+  );
+}
+
+export function getDeliveryOrder(orderId: string) {
+  return authFetch<DeliveryOrderView>(`/delivery/orders/${orderId}`);
+}
+
+export function updateDeliveryOrderStatus(
+  orderId: string,
+  status: DeliveryOrderNextStatus,
+  note?: string,
+) {
+  return authFetch<DeliveryOrderView>(`/delivery/orders/${orderId}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      status,
+      ...(note ? { note } : {}),
+    }),
+  });
+}
+
+export function rateDelivery(
+  orderId: string,
+  rating: number,
+  comment?: string,
+) {
+  return authFetch<{
+    ratingId: string;
+    orderId: string;
+    rating: number;
+    comment: string | null;
+    createdAt: string;
+  }>(`/orders/mine/${orderId}/rate-delivery`, {
+    method: 'POST',
+    body: JSON.stringify({
+      rating,
+      ...(comment ? { comment } : {}),
+    }),
   });
 }

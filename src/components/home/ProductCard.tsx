@@ -65,6 +65,9 @@ export function ProductCard({ product }: ProductCardProps) {
         ) : (
           <div className="product-img-placeholder" />
         )}
+        {product.sponsored && (
+          <span className="product-sponsored-badge">Sponsored</span>
+        )}
         <div className="product-details">
           <span className="company-name">
             {product.company?.companyName ?? product.laboratory}

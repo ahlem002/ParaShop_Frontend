@@ -5,6 +5,7 @@ import { resolveUploadUrl } from '../../config/api';
 function getProfilePath(role: string) {
   if (role === 'ADMIN') return '/admin/profile';
   if (role === 'COMPANY') return '/company/profile';
+  if (role === 'DELIVERY') return '/delivery/profile';
   return '/profile';
 }
 

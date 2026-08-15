@@ -76,7 +76,7 @@ export function ProductsPage() {
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    return products.filter((product) => {
+    const list = products.filter((product) => {
       if (categoryFilter !== 'ALL') {
         const name = product.category?.name ?? '';
         if (
@@ -111,6 +111,24 @@ export function ProductsPage() {
         (product.description ?? '').toLowerCase().includes(query) ||
         (product.category?.name ?? '').toLowerCase().includes(query)
       );
+    });
+
+    const hasSearch = query.length > 0;
+    const hasCategory = categoryFilter !== 'ALL';
+
+    return [...list].sort((a, b) => {
+      const score = (p: PublicProduct) => {
+        if (hasSearch && p.sponsorship?.search) return 3;
+        if (hasCategory && p.sponsorship?.category) return 2;
+        if (!hasSearch && !hasCategory && p.sponsorship?.home) return 2;
+        if (p.sponsored) return 1;
+        return 0;
+      };
+      const diff = score(b) - score(a);
+      if (diff !== 0) return diff;
+      const aPaid = a.sponsorship?.paidAt ?? '';
+      const bPaid = b.sponsorship?.paidAt ?? '';
+      return bPaid.localeCompare(aPaid);
     });
   }, [
     products,

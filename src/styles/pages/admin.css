@@ -1751,3 +1751,127 @@ body:has(.admin-layout) {
 .company-order-items__row {
   justify-content: flex-start;
 }
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  align-items: end;
+}
+
+.admin-checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.company-order-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.company-order-card__actions select {
+  min-width: 220px;
+  max-width: 100%;
+}
+
+.driver-notes {
+  width: 100%;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.driver-notes ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.order-rate-box {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.admin-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid var(--border-input);
+  background: var(--bg-very-light);
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.admin-icon-btn:hover {
+  border-color: var(--brand-primary, #8b5cf6);
+  color: var(--brand-primary, #8b5cf6);
+}
+
+.admin-icon-btn--danger:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(15, 23, 42, 0.45);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.admin-modal {
+  width: min(560px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  background: var(--bg-card, #fff);
+  border-radius: 16px;
+  padding: 22px;
+  border: 1px solid var(--border-input);
+}
+
+.admin-modal h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+}
+
+.admin-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.admin-detail-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.admin-detail-list > div {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 8px;
+}
+
+.admin-detail-list dt {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.admin-detail-list dd {
+  margin: 0;
+}
+

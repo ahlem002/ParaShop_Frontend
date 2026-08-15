@@ -75,7 +75,7 @@ export function verifyTwoFactorLogin(tempToken: string, code: string) {
 }
 
 export function changePassword(currentPassword: string, newPassword: string) {
-  return authFetch<{ message: string }>('/auth/change-password', {
+  return authFetch<{ message: string; user?: AuthUser }>('/auth/change-password', {
     method: 'POST',
     body: JSON.stringify({ currentPassword, newPassword }),
   });

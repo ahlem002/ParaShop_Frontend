@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  BarChart3,
   Building2,
   ClipboardCheck,
   Megaphone,
@@ -30,17 +29,13 @@ import type { AdminDashboardStats } from '../../types/admin';
 const PIE_COLORS = ['#a78bfa', '#8eb4e0', '#e8a4c4', '#8ec9b4', '#e8b890'];
 
 function formatMoney(value: number) {
-  return new Intl.NumberFormat('fr-DZ', {
-    style: 'currency',
-    currency: 'DZD',
-    maximumFractionDigits: 0,
-  }).format(value);
+  return `${Number(value).toFixed(2)} TND`;
 }
 
 function formatDate(iso: string) {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return '—';
-  return date.toLocaleDateString('fr-FR', {
+  return date.toLocaleDateString('en-GB', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
@@ -66,7 +61,7 @@ export function AdminDashboardHomePage() {
           setError(
             err instanceof Error
               ? err.message
-              : 'Impossible de charger le dashboard',
+              : 'Failed to load the dashboard',
           );
         }
       } finally {
@@ -84,7 +79,7 @@ export function AdminDashboardHomePage() {
     if (!stats) return [];
     return [
       { name: 'Clients', value: stats.users.clients },
-      { name: 'Entreprises', value: stats.users.companies },
+      { name: 'Companies', value: stats.users.companies },
       { name: 'Admins', value: stats.users.admins },
     ].filter((item) => item.value > 0);
   }, [stats]);
@@ -92,18 +87,18 @@ export function AdminDashboardHomePage() {
   const productsPie = useMemo(() => {
     if (!stats) return [];
     return [
-      { name: 'En attente', value: stats.products.pending },
-      { name: 'Approuvés', value: stats.products.approved },
-      { name: 'Rejetés', value: stats.products.rejected },
+      { name: 'Pending', value: stats.products.pending },
+      { name: 'Approved', value: stats.products.approved },
+      { name: 'Rejected', value: stats.products.rejected },
     ].filter((item) => item.value > 0);
   }, [stats]);
 
   const companiesPie = useMemo(() => {
     if (!stats) return [];
     return [
-      { name: 'En attente', value: stats.companies.pending },
-      { name: 'Validées', value: stats.companies.approved },
-      { name: 'Rejetées', value: stats.companies.rejected },
+      { name: 'Pending', value: stats.companies.pending },
+      { name: 'Approved', value: stats.companies.approved },
+      { name: 'Rejected', value: stats.companies.rejected },
     ].filter((item) => item.value > 0);
   }, [stats]);
 
@@ -111,16 +106,16 @@ export function AdminDashboardHomePage() {
     <div className="admin-page admin-dashboard">
       <div className="admin-page-heading">
         <div>
-          <h1 className="admin-page-title">Dashboard Administrateur</h1>
+          <h1 className="admin-page-title">Admin Dashboard</h1>
           <p className="admin-page-subtitle">
-            Vue d’ensemble de la plateforme ParaShop+
+            Overview of the ParaShop+ platform
           </p>
         </div>
       </div>
 
       {loading && (
         <div className="admin-page-card admin-page-card--empty">
-          <p>Chargement des statistiques…</p>
+          <p>Loading statistics…</p>
         </div>
       )}
 
@@ -133,19 +128,17 @@ export function AdminDashboardHomePage() {
       {stats && !loading && (
         <>
           <section className="admin-dashboard__section">
-            <h2 className="admin-dashboard__section-title">
-              Statistiques globales
-            </h2>
+            <h2 className="admin-dashboard__section-title">Global statistics</h2>
             <div className="admin-stat-grid">
               <article className="admin-stat-card">
                 <div className="admin-stat-card__icon">
                   <Users size={20} strokeWidth={2} />
                 </div>
-                <p className="admin-stat-card__label">Utilisateurs</p>
+                <p className="admin-stat-card__label">Users</p>
                 <p className="admin-stat-card__value">{stats.users.total}</p>
                 <p className="admin-stat-card__meta">
                   {stats.users.clients} clients · {stats.users.companies}{' '}
-                  entreprises · {stats.users.blocked} bloqués
+                  companies · {stats.users.blocked} blocked
                 </p>
               </article>
 
@@ -153,11 +146,11 @@ export function AdminDashboardHomePage() {
                 <div className="admin-stat-card__icon">
                   <Building2 size={20} strokeWidth={2} />
                 </div>
-                <p className="admin-stat-card__label">Entreprises</p>
+                <p className="admin-stat-card__label">Companies</p>
                 <p className="admin-stat-card__value">{stats.companies.total}</p>
                 <p className="admin-stat-card__meta">
-                  {stats.companies.pending} en attente ·{' '}
-                  {stats.companies.approved} validées
+                  {stats.companies.pending} pending ·{' '}
+                  {stats.companies.approved} approved
                 </p>
               </article>
 
@@ -165,11 +158,11 @@ export function AdminDashboardHomePage() {
                 <div className="admin-stat-card__icon">
                   <PackageCheck size={20} strokeWidth={2} />
                 </div>
-                <p className="admin-stat-card__label">Produits</p>
+                <p className="admin-stat-card__label">Products</p>
                 <p className="admin-stat-card__value">{stats.products.total}</p>
                 <p className="admin-stat-card__meta">
-                  {stats.products.pending} à valider ·{' '}
-                  {stats.products.approved} publiés
+                  {stats.products.pending} to review ·{' '}
+                  {stats.products.approved} published
                 </p>
               </article>
 
@@ -177,14 +170,14 @@ export function AdminDashboardHomePage() {
                 <div className="admin-stat-card__icon">
                   <Wallet size={20} strokeWidth={2} />
                 </div>
-                <p className="admin-stat-card__label">Stock catalogue</p>
+                <p className="admin-stat-card__label">Catalog stock</p>
                 <p className="admin-stat-card__value admin-stat-card__value--sm">
                   {formatMoney(stats.catalog.approvedProductValue)}
                 </p>
                 <p className="admin-stat-card__meta">
-                  Estimation : prix × quantité des produits approuvés (
-                  {stats.catalog.totalStockUnits} unités). Ce n’est pas un
-                  revenu de ventes.
+                  Estimate: price × quantity of approved products (
+                  {stats.catalog.totalStockUnits} units). This is not sales
+                  revenue.
                 </p>
               </article>
             </div>
@@ -194,9 +187,9 @@ export function AdminDashboardHomePage() {
             <h2 className="admin-dashboard__section-title">Analytics</h2>
             <div className="admin-chart-grid">
               <div className="admin-page-card admin-chart-card">
-                <h3>Activité (7 derniers jours)</h3>
+                <h3>Activity (last 7 days)</h3>
                 <p className="admin-chart-card__hint">
-                  Nouveaux comptes et produits créés chaque jour
+                  New accounts and products created each day
                 </p>
                 <div className="admin-chart-card__body">
                   <ResponsiveContainer width="100%" height={260}>
@@ -219,7 +212,7 @@ export function AdminDashboardHomePage() {
                       <Area
                         type="monotone"
                         dataKey="users"
-                        name="Utilisateurs"
+                        name="Users"
                         stroke="#a78bfa"
                         fill="url(#usersFill)"
                         strokeWidth={2}
@@ -227,7 +220,7 @@ export function AdminDashboardHomePage() {
                       <Area
                         type="monotone"
                         dataKey="products"
-                        name="Produits"
+                        name="Products"
                         stroke="#8eb4e0"
                         fill="url(#productsFill)"
                         strokeWidth={2}
@@ -238,11 +231,11 @@ export function AdminDashboardHomePage() {
               </div>
 
               <div className="admin-page-card admin-chart-card">
-                <h3>Répartition des utilisateurs</h3>
-                <p className="admin-chart-card__hint">Clients / entreprises / admins</p>
+                <h3>User breakdown</h3>
+                <p className="admin-chart-card__hint">Clients / companies / admins</p>
                 <div className="admin-chart-card__body">
                   {usersPie.length === 0 ? (
-                    <p className="admin-dashboard__empty">Pas encore de données.</p>
+                    <p className="admin-dashboard__empty">No data yet.</p>
                   ) : (
                     <ResponsiveContainer width="100%" height={260}>
                       <PieChart>
@@ -270,11 +263,11 @@ export function AdminDashboardHomePage() {
               </div>
 
               <div className="admin-page-card admin-chart-card">
-                <h3>Statut des produits</h3>
-                <p className="admin-chart-card__hint">En attente / approuvés / rejetés</p>
+                <h3>Product status</h3>
+                <p className="admin-chart-card__hint">Pending / approved / rejected</p>
                 <div className="admin-chart-card__body">
                   {productsPie.length === 0 ? (
-                    <p className="admin-dashboard__empty">Pas encore de données.</p>
+                    <p className="admin-dashboard__empty">No data yet.</p>
                   ) : (
                     <ResponsiveContainer width="100%" height={260}>
                       <PieChart>
@@ -302,11 +295,11 @@ export function AdminDashboardHomePage() {
               </div>
 
               <div className="admin-page-card admin-chart-card">
-                <h3>Statut des entreprises</h3>
-                <p className="admin-chart-card__hint">Validation des comptes company</p>
+                <h3>Company status</h3>
+                <p className="admin-chart-card__hint">Company account validation</p>
                 <div className="admin-chart-card__body">
                   {companiesPie.length === 0 ? (
-                    <p className="admin-dashboard__empty">Pas encore de données.</p>
+                    <p className="admin-dashboard__empty">No data yet.</p>
                   ) : (
                     <ResponsiveContainer width="100%" height={260}>
                       <PieChart>
@@ -341,49 +334,42 @@ export function AdminDashboardHomePage() {
               <Link to="/admin/users" className="admin-module-card">
                 <UserCog size={22} strokeWidth={2} />
                 <div>
-                  <strong>Gestion utilisateurs</strong>
-                  <span>Comptes, rôles et statuts</span>
+                  <strong>User management</strong>
+                  <span>Accounts, roles, and statuses</span>
                 </div>
               </Link>
               <Link to="/admin/product-validations" className="admin-module-card">
                 <PackageCheck size={22} strokeWidth={2} />
                 <div>
-                  <strong>Validation produits</strong>
+                  <strong>Product validation</strong>
                   <span>
-                    {stats.products.pending} produit
-                    {stats.products.pending === 1 ? '' : 's'} en attente
+                    {stats.products.pending} product
+                    {stats.products.pending === 1 ? '' : 's'} pending
                   </span>
                 </div>
               </Link>
               <Link to="/admin/validations" className="admin-module-card">
                 <ClipboardCheck size={22} strokeWidth={2} />
                 <div>
-                  <strong>Validation entreprises</strong>
+                  <strong>Company validation</strong>
                   <span>
-                    {stats.companies.pending} demande
-                    {stats.companies.pending === 1 ? '' : 's'} en attente
+                    {stats.companies.pending} request
+                    {stats.companies.pending === 1 ? '' : 's'} pending
                   </span>
                 </div>
               </Link>
               <Link to="/admin/revenue" className="admin-module-card">
                 <TrendingUp size={22} strokeWidth={2} />
                 <div>
-                  <strong>Revenus</strong>
-                  <span>Suivi financier de la plateforme</span>
+                  <strong>Revenue</strong>
+                  <span>Platform financial tracking</span>
                 </div>
               </Link>
               <Link to="/admin/campaigns" className="admin-module-card">
                 <Megaphone size={22} strokeWidth={2} />
                 <div>
-                  <strong>Campagnes sponsorisées</strong>
-                  <span>Promotions et visibilité payante</span>
-                </div>
-              </Link>
-              <Link to="/admin/analytics" className="admin-module-card">
-                <BarChart3 size={22} strokeWidth={2} />
-                <div>
-                  <strong>Analytics</strong>
-                  <span>Trafic, conversions et tendances</span>
+                  <strong>Sponsored campaigns</strong>
+                  <span>Promotions and paid visibility</span>
                 </div>
               </Link>
             </div>
@@ -392,11 +378,11 @@ export function AdminDashboardHomePage() {
           <section className="admin-dashboard__split">
             <div className="admin-page-card">
               <div className="admin-dashboard__card-head">
-                <h2>Entreprises à valider</h2>
-                <Link to="/admin/validations">Voir tout</Link>
+                <h2>Companies to review</h2>
+                <Link to="/admin/validations">View all</Link>
               </div>
               {stats.recent.pendingCompanies.length === 0 ? (
-                <p className="admin-dashboard__empty">Aucune demande en attente.</p>
+                <p className="admin-dashboard__empty">No pending requests.</p>
               ) : (
                 <ul className="admin-dashboard__list">
                   {stats.recent.pendingCompanies.map((company) => (
@@ -411,11 +397,11 @@ export function AdminDashboardHomePage() {
 
             <div className="admin-page-card">
               <div className="admin-dashboard__card-head">
-                <h2>Produits à valider</h2>
-                <Link to="/admin/product-validations">Voir tout</Link>
+                <h2>Products to review</h2>
+                <Link to="/admin/product-validations">View all</Link>
               </div>
               {stats.recent.pendingProducts.length === 0 ? (
-                <p className="admin-dashboard__empty">Aucun produit en attente.</p>
+                <p className="admin-dashboard__empty">No products pending.</p>
               ) : (
                 <ul className="admin-dashboard__list">
                   {stats.recent.pendingProducts.map((product) => (

@@ -40,6 +40,13 @@ export interface PublicProduct {
     companyName: string;
     deliveryFee?: number | string;
   };
+  sponsored?: boolean;
+  sponsorship?: {
+    home: boolean;
+    category: boolean;
+    search: boolean;
+    paidAt: string | null;
+  } | null;
 }
 
 export interface ProductFormPayload {

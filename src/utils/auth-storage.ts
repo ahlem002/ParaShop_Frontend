@@ -82,6 +82,14 @@ export function getStoredUser(): AuthUser | null {
 }
 
 export function getPostAuthPath(user: AuthUser): string {
+  if (user.mustChangePassword) {
+    return '/auth/change-password';
+  }
+
+  if (user.role === 'DELIVERY' && user.profileCompleted === false) {
+    return '/auth/complete-profile';
+  }
+
   if (user.role === 'ADMIN') {
     return '/admin';
   }
@@ -91,6 +99,10 @@ export function getPostAuthPath(user: AuthUser): string {
       return '/company';
     }
     return '/company/pending';
+  }
+
+  if (user.role === 'DELIVERY') {
+    return '/delivery';
   }
 
   return '/';

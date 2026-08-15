@@ -33,10 +33,19 @@ import { AdminValidationsPage } from './pages/admin/AdminValidationsPage';
 import { AdminProductValidationsPage } from './pages/admin/AdminProductValidationsPage';
 import { AdminUsersPage } from './pages/admin/AdminUsersPage';
 import { AdminClientsPage } from './pages/admin/AdminClientsPage';
+import { AdminDriversPage } from './pages/admin/AdminDriversPage';
 import { AdminCompaniesPage } from './pages/admin/AdminCompaniesPage';
 import { AdminRevenuePage } from './pages/admin/AdminRevenuePage';
 import { AdminCampaignsPage } from './pages/admin/AdminCampaignsPage';
-import { AdminAnalyticsPage } from './pages/admin/AdminAnalyticsPage';
+import { CompanyDeliveryPage } from './pages/company/CompanyDeliveryPage';
+import { CompanyPromotionsPage } from './pages/company/CompanyPromotionsPage';
+import { CompanyPromotionPaymentPage } from './pages/company/CompanyPromotionPaymentPage';
+import { DeliveryLayout } from './components/delivery/DeliveryLayout';
+import { DeliveryDashboardPage } from './pages/delivery/DeliveryDashboardPage';
+import { DeliveryOrdersPage } from './pages/delivery/DeliveryOrdersPage';
+import { DeliveryOrderDetailPage } from './pages/delivery/DeliveryOrderDetailPage';
+import { ForceChangePasswordPage } from './pages/ForceChangePasswordPage';
+import { CompleteProfilePage } from './pages/CompleteProfilePage';
 import { SettingsPage } from './pages/SettingsPage';
 import { PublicSettingsPage } from './pages/PublicSettingsPage';
 import { ProfilePage } from './pages/ProfilePage';
@@ -163,6 +172,22 @@ function App() {
                 <Route path="/signup/company" element={<CompanySignUpPage />} />
                 <Route path="/company/pending" element={<CompanyPendingPage />} />
                 <Route
+                  path="/auth/change-password"
+                  element={
+                    <ProtectedRoute allowOnboarding>
+                      <ForceChangePasswordPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/auth/complete-profile"
+                  element={
+                    <ProtectedRoute allowOnboarding allowedRoles={['DELIVERY']}>
+                      <CompleteProfilePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/company"
                   element={
                     <ProtectedRoute allowedRoles={['COMPANY']}>
@@ -173,6 +198,12 @@ function App() {
                   <Route index element={<CompanyDashboardHomePage />} />
                   <Route path="products" element={<CompanyProductsPage />} />
                   <Route path="orders" element={<CompanyOrdersPage />} />
+                  <Route path="delivery" element={<CompanyDeliveryPage />} />
+                  <Route path="promotions" element={<CompanyPromotionsPage />} />
+                  <Route
+                    path="promotions/pay"
+                    element={<CompanyPromotionPaymentPage />}
+                  />
                   <Route path="orders/client/:clientId" element={<CompanyClientOrdersPage />} />
                   <Route path="products/new" element={<CompanyProductFormPage />} />
                   <Route
@@ -185,6 +216,33 @@ function App() {
                   />
                   <Route path="notifications" element={<NotificationsPage />} />
                   <Route path="history" element={<HistoryPage />} />
+                  <Route path="profile" element={<ProfilePage />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                </Route>
+                <Route
+                  path="/delivery"
+                  element={
+                    <ProtectedRoute allowedRoles={['DELIVERY']}>
+                      <DeliveryLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<DeliveryDashboardPage />} />
+                  <Route path="orders" element={<DeliveryOrdersPage />} />
+                  <Route
+                    path="orders/:orderId"
+                    element={<DeliveryOrderDetailPage />}
+                  />
+                  <Route
+                    path="history"
+                    element={
+                      <DeliveryOrdersPage
+                        scope="history"
+                        title="Delivery history"
+                      />
+                    }
+                  />
+                  <Route path="notifications" element={<NotificationsPage />} />
                   <Route path="profile" element={<ProfilePage />} />
                   <Route path="settings" element={<SettingsPage />} />
                 </Route>
@@ -204,10 +262,10 @@ function App() {
                   />
                   <Route path="users" element={<AdminUsersPage />} />
                   <Route path="clients" element={<AdminClientsPage />} />
+                  <Route path="drivers" element={<AdminDriversPage />} />
                   <Route path="companies" element={<AdminCompaniesPage />} />
                   <Route path="revenue" element={<AdminRevenuePage />} />
                   <Route path="campaigns" element={<AdminCampaignsPage />} />
-                  <Route path="analytics" element={<AdminAnalyticsPage />} />
                   <Route path="history" element={<HistoryPage />} />
                   <Route path="notifications" element={<NotificationsPage />} />
                   <Route path="profile" element={<ProfilePage />} />

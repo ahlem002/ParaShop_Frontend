@@ -4,9 +4,11 @@ import {
   History,
   LayoutDashboard,
   LogOut,
+  Megaphone,
   Package,
   Settings,
   ShoppingBag,
+  Truck,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { ThemeToggle } from '../layout/ThemeToggle';
@@ -15,6 +17,8 @@ const navItems = [
   { label: 'Dashboard', to: '/company', icon: LayoutDashboard },
   { label: 'Product Management', to: '/company/products', icon: Package },
   { label: 'Order Management', to: '/company/orders', icon: ShoppingBag },
+  { label: 'Delivery Management', to: '/company/delivery', icon: Truck },
+  { label: 'Promote products', to: '/company/promotions', icon: Megaphone },
   { label: 'History', to: '/company/history', icon: History },
   { label: 'Notifications', to: '/company/notifications', icon: Bell },
   { label: 'Settings', to: '/company/settings', icon: Settings },

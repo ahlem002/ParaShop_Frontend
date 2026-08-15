@@ -23,6 +23,8 @@ export function statusLabel(status: OrderStatus) {
       return 'Shipped';
     case 'DELIVERED':
       return 'Delivered';
+    case 'RETURNED':
+      return 'Returned to seller';
     case 'CANCELLED':
       return 'Cancelled';
     default:
@@ -41,6 +43,7 @@ export function statusBadgeClass(status: OrderStatus) {
       return 'admin-badge admin-badge--pending';
     case 'PAYMENT_FAILED':
     case 'CANCELLED':
+    case 'RETURNED':
       return 'admin-badge admin-badge--rejected';
     default:
       return 'admin-badge';
@@ -51,10 +54,6 @@ export function nextActionLabel(status: CompanyOrderNextStatus) {
   switch (status) {
     case 'PROCESSING':
       return 'Mark processing';
-    case 'SHIPPED':
-      return 'Mark shipped';
-    case 'DELIVERED':
-      return 'Mark delivered';
     default:
       return status;
   }
@@ -80,13 +79,13 @@ export const ORDER_STATUS_FILTER_HELP: {
     value: 'PROCESSING',
     label: 'Processing',
     description:
-      'You are preparing the order. Next step is Mark shipped when it leaves.',
+      'You are preparing the order. Assign a driver from Delivery Management to ship it.',
   },
   {
     value: 'SHIPPED',
     label: 'Shipped',
     description:
-      'Order is on the way. Next step is Mark delivered when the client receives it.',
+      'A driver is delivering the order. Track it in Delivery Management.',
   },
   {
     value: 'DELIVERED',
@@ -94,10 +93,16 @@ export const ORDER_STATUS_FILTER_HELP: {
     description: 'Order completed successfully. No further action needed.',
   },
   {
+    value: 'RETURNED',
+    label: 'Returned to seller',
+    description:
+      'Client did not accept the order. The driver returned it to you.',
+  },
+  {
     value: 'PENDING_PAYMENT',
     label: 'Pending payment',
     description:
-      'Checkout started but Flouci payment is not confirmed yet. Wait for payment.',
+      'Checkout started but payment is not confirmed yet. Wait for payment.',
   },
   {
     value: 'PAYMENT_FAILED',

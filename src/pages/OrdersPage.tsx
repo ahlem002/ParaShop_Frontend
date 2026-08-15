@@ -8,6 +8,7 @@ import {
   cancelMyOrder,
   deleteMyOrder,
   getMyOrders,
+  rateDelivery,
 } from '../services/orders.service';
 import type { OrderItemView, OrderStatus, OrderView } from '../types/order';
 import '../styles/pages/cart.css';
@@ -31,6 +32,8 @@ function statusLabel(status: OrderView['status']) {
       return 'Shipped';
     case 'DELIVERED':
       return 'Delivered';
+    case 'RETURNED':
+      return 'Returned to seller';
     case 'CANCELLED':
       return 'Cancelled';
     default:
@@ -45,6 +48,7 @@ function statusTone(status: OrderView['status']) {
       return 'paid';
     case 'PAYMENT_FAILED':
     case 'CANCELLED':
+    case 'RETURNED':
       return 'failed';
     case 'PENDING_PAYMENT':
       return 'pending';
@@ -108,6 +112,9 @@ export function OrdersPage() {
   const [error, setError] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [ratingDraft, setRatingDraft] = useState<
+    Record<string, { rating: number; comment: string }>
+  >({});
 
   useEffect(() => {
     let cancelled = false;
@@ -167,6 +174,37 @@ export function OrdersPage() {
       ),
     [filteredOrders],
   );
+
+  async function handleRate(order: OrderView) {
+    const draft = ratingDraft[order.orderId] ?? { rating: 5, comment: '' };
+    setBusyId(order.orderId);
+    setError('');
+    try {
+      await rateDelivery(
+        order.orderId,
+        draft.rating,
+        draft.comment.trim() || undefined,
+      );
+      setOrders((prev) =>
+        prev.map((item) =>
+          item.orderId === order.orderId
+            ? {
+                ...item,
+                canRateDelivery: false,
+                myDeliveryRating: {
+                  rating: draft.rating,
+                  comment: draft.comment.trim() || null,
+                },
+              }
+            : item,
+        ),
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not submit rating');
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   async function handleCancel(order: OrderView) {
     const ok = await confirm({
@@ -334,6 +372,61 @@ export function OrdersPage() {
                 </div>
 
                 <div className="shop-line-card__actions">
+                  {order.canRateDelivery && (
+                    <div className="order-rate-box">
+                      <label>
+                        Rate driver
+                        <select
+                          value={ratingDraft[order.orderId]?.rating ?? 5}
+                          onChange={(e) =>
+                            setRatingDraft((prev) => ({
+                              ...prev,
+                              [order.orderId]: {
+                                rating: Number(e.target.value),
+                                comment: prev[order.orderId]?.comment ?? '',
+                              },
+                            }))
+                          }
+                        >
+                          {[5, 4, 3, 2, 1].map((value) => (
+                            <option key={value} value={value}>
+                              {value}/5
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Optional note"
+                        value={ratingDraft[order.orderId]?.comment ?? ''}
+                        onChange={(e) =>
+                          setRatingDraft((prev) => ({
+                            ...prev,
+                            [order.orderId]: {
+                              rating: prev[order.orderId]?.rating ?? 5,
+                              comment: e.target.value,
+                            },
+                          }))
+                        }
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-nav shop-line-card__btn"
+                        disabled={busy}
+                        onClick={() => void handleRate(order)}
+                      >
+                        Submit rating
+                      </button>
+                    </div>
+                  )}
+                  {order.myDeliveryRating && (
+                    <p className="shop-line-card__meta">
+                      Your rating: {order.myDeliveryRating.rating}/5
+                      {order.myDeliveryRating.comment
+                        ? ` — ${order.myDeliveryRating.comment}`
+                        : ''}
+                    </p>
+                  )}
                   {showCancel && (
                     <button
                       type="button"

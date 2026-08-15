@@ -17,6 +17,16 @@ export interface OrderItemView {
   lineTotal: number;
 }
 
+export interface OrderClientView {
+  clientId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string | null;
+}
+
+export type CompanyOrderNextStatus = 'PROCESSING' | 'SHIPPED' | 'DELIVERED';
+
 export interface OrderView {
   orderId: string;
   status: OrderStatus;
@@ -38,13 +48,18 @@ export interface OrderView {
   paymentStatus?: string;
 }
 
+export interface CompanyOrderView extends OrderView {
+  client: OrderClientView;
+  nextStatuses: CompanyOrderNextStatus[];
+}
+
 export interface CheckoutResponse {
   orderId: string;
   trackingId: string;
   total: number;
   amountMillimes: number;
-  paymentId: string;
-  paymentUrl: string;
+  paymentId: string | null;
+  paymentUrl: string | null;
   company: {
     companyId: string;
     companyName: string;

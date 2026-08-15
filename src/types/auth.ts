@@ -27,6 +27,11 @@ export interface AuthUser {
   profileImage?: string | null;
   createdAt?: string | null;
   twoFactorEnabled?: boolean;
+  savedPaymentMethod?: {
+    cardName: string | null;
+    cardNumber: string | null;
+    cardExpiry: string | null;
+  } | null;
   company?: AuthCompanyProfile | null;
 }
 
@@ -82,4 +87,12 @@ export interface UpdateProfilePayload {
   description?: string;
   companyPhoneNumber?: string;
   profileImage?: File | null;
+}
+
+export interface SaveCheckoutDetailsPayload {
+  address?: string;
+  phoneNumber?: string;
+  cardName?: string;
+  cardNumber?: string;
+  cardExpiry?: string;
 }

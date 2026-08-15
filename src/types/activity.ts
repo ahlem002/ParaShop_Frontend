@@ -12,7 +12,8 @@ export type ActivityType =
   | 'PAYMENT_SUCCEEDED'
   | 'PAYMENT_FAILED'
   | 'LOGIN'
-  | 'ORDER_CANCELLED';
+  | 'ORDER_CANCELLED'
+  | 'ORDER_STATUS_UPDATED';
 
 export interface ActivityLogEntry {
   activityId: string;

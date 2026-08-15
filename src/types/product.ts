@@ -38,6 +38,7 @@ export interface PublicProduct {
   company?: {
     companyId: string;
     companyName: string;
+    deliveryFee?: number | string;
   };
 }
 

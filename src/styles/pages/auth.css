@@ -204,6 +204,37 @@
   color: var(--primary-hover);
 }
 
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-input);
+}
+
+.auth-google {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.auth-google.is-disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
 .role-badge {
   font-size: 12px;
   font-weight: 600;

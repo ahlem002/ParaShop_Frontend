@@ -89,21 +89,11 @@ export function PublicProductDetailPage() {
     }
   }
 
-  async function handleBuyNow() {
+  function handleBuyNow() {
     if (!product || !requireClientLogin()) return;
-    setBusy(true);
-    setFeedback(null);
-    try {
-      await addItem(product.productId, quantity);
-      navigate('/cart');
-    } catch (err) {
-      setFeedback({
-        type: 'error',
-        text: err instanceof Error ? err.message : 'Could not add to cart',
-      });
-    } finally {
-      setBusy(false);
-    }
+    navigate(
+      `/checkout?productId=${product.productId}&quantity=${quantity}`,
+    );
   }
 
   async function handleToggleFavorite() {

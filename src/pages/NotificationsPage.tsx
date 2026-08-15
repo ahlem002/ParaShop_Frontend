@@ -7,6 +7,8 @@ import {
   CheckCheck,
   Package,
   Settings2,
+  ShoppingBag,
+  Truck,
   XCircle,
 } from 'lucide-react';
 import { useNotifications } from '../context/NotificationsContext';
@@ -57,6 +59,10 @@ function iconForType(type: NotificationType) {
       return Check;
     case 'PRODUCT_REJECTED':
       return XCircle;
+    case 'ORDER_UPDATED':
+      return Truck;
+    case 'NEW_ORDER':
+      return ShoppingBag;
     default:
       return Bell;
   }
@@ -72,6 +78,10 @@ function toneForType(type: NotificationType) {
       return 'green';
     case 'PRODUCT_REJECTED':
       return 'yellow';
+    case 'ORDER_UPDATED':
+      return 'blue';
+    case 'NEW_ORDER':
+      return 'green';
     default:
       return 'purple';
   }
@@ -87,6 +97,9 @@ function matchesTab(item: AppNotification, tab: NotificationFilterTab) {
       item.type === 'PRODUCT_APPROVED' ||
       item.type === 'PRODUCT_REJECTED'
     );
+  }
+  if (tab === 'system') {
+    return item.type === 'ORDER_UPDATED' || item.type === 'NEW_ORDER';
   }
   return false;
 }

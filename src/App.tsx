@@ -13,6 +13,8 @@ import { ProductsPage } from './pages/ProductsPage';
 import { PublicProductDetailPage } from './pages/PublicProductDetailPage';
 import { CartPage } from './pages/CartPage';
 import { CheckoutPage } from './pages/CheckoutPage';
+import { FakePaymentPage } from './pages/FakePaymentPage';
+import { ConfirmPaymentPage } from './pages/ConfirmPaymentPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { PaymentSuccessPage } from './pages/PaymentSuccessPage';
 import { PaymentFailPage } from './pages/PaymentFailPage';
@@ -24,6 +26,8 @@ import { CompanyDashboardHomePage } from './pages/company/CompanyDashboardHomePa
 import { CompanyProductsPage } from './pages/company/CompanyProductsPage';
 import { CompanyProductFormPage } from './pages/company/CompanyProductFormPage';
 import { CompanyProductDetailPage } from './pages/company/CompanyProductDetailPage';
+import { CompanyOrdersPage } from './pages/company/CompanyOrdersPage';
+import { CompanyClientOrdersPage } from './pages/company/CompanyClientOrdersPage';
 import { AdminDashboardHomePage } from './pages/admin/AdminDashboardHomePage';
 import { AdminValidationsPage } from './pages/admin/AdminValidationsPage';
 import { AdminProductValidationsPage } from './pages/admin/AdminProductValidationsPage';
@@ -71,6 +75,22 @@ function App() {
                   element={
                     <ProtectedRoute allowedRoles={['CLIENT']}>
                       <CheckoutPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/checkout/payment"
+                  element={
+                    <ProtectedRoute allowedRoles={['CLIENT']}>
+                      <FakePaymentPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/checkout/confirm"
+                  element={
+                    <ProtectedRoute allowedRoles={['CLIENT']}>
+                      <ConfirmPaymentPage />
                     </ProtectedRoute>
                   }
                 />
@@ -152,6 +172,8 @@ function App() {
                 >
                   <Route index element={<CompanyDashboardHomePage />} />
                   <Route path="products" element={<CompanyProductsPage />} />
+                  <Route path="orders" element={<CompanyOrdersPage />} />
+                  <Route path="orders/client/:clientId" element={<CompanyClientOrdersPage />} />
                   <Route path="products/new" element={<CompanyProductFormPage />} />
                   <Route
                     path="products/:productId"

@@ -10,8 +10,10 @@ import {
 import {
   getProfile,
   login as loginRequest,
+  loginWithGoogle as loginWithGoogleRequest,
   registerClient,
   registerCompany,
+  saveCheckoutDetails as saveCheckoutDetailsRequest,
   updateProfile as updateProfileRequest,
   verifyTwoFactorLogin as verifyTwoFactorLoginRequest,
 } from '../services/auth.service';
@@ -20,6 +22,7 @@ import type {
   LoginPayload,
   RegisterClientPayload,
   RegisterCompanyPayload,
+  SaveCheckoutDetailsPayload,
   UpdateProfilePayload,
 } from '../types/auth';
 import {
@@ -40,6 +43,10 @@ interface AuthContextValue {
     payload: LoginPayload,
     rememberMe?: boolean,
   ) => Promise<string | { requiresTwoFactor: true; tempToken: string }>;
+  loginWithGoogle: (
+    idToken: string,
+    rememberMe?: boolean,
+  ) => Promise<string | { requiresTwoFactor: true; tempToken: string }>;
   completeTwoFactorLogin: (
     tempToken: string,
     code: string,
@@ -48,6 +55,9 @@ interface AuthContextValue {
   registerAsClient: (payload: RegisterClientPayload) => Promise<string>;
   registerAsCompany: (payload: RegisterCompanyPayload) => Promise<string>;
   updateProfile: (payload: UpdateProfilePayload) => Promise<AuthUser>;
+  saveCheckoutDetails: (
+    payload: SaveCheckoutDetailsPayload,
+  ) => Promise<AuthUser>;
   refreshProfile: () => Promise<AuthUser | null>;
   setUserFromProfile: (profile: AuthUser) => void;
   logout: () => void;
@@ -89,6 +99,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [applyAuth],
   );
 
+  const loginWithGoogle = useCallback(
+    async (idToken: string, rememberMe = false) => {
+      const response = await loginWithGoogleRequest(idToken);
+      if ('requiresTwoFactor' in response && response.requiresTwoFactor) {
+        return {
+          requiresTwoFactor: true as const,
+          tempToken: response.tempToken,
+        };
+      }
+      return applyAuth(response.accessToken, response.user, rememberMe);
+    },
+    [applyAuth],
+  );
+
   const completeTwoFactorLogin = useCallback(
     async (tempToken: string, code: string, rememberMe = false) => {
       const response = await verifyTwoFactorLoginRequest(tempToken, code);
@@ -119,6 +143,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(updated);
     return updated;
   }, []);
+
+  const saveCheckoutDetails = useCallback(
+    async (payload: SaveCheckoutDetailsPayload) => {
+      const updated = await saveCheckoutDetailsRequest(payload);
+      saveStoredUser(updated);
+      setUser(updated);
+      return updated;
+    },
+    [],
+  );
 
   const setUserFromProfile = useCallback((profile: AuthUser) => {
     saveStoredUser(profile);
@@ -191,10 +225,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       token,
       isAuthenticated: Boolean(token && user),
       login,
+      loginWithGoogle,
       completeTwoFactorLogin,
       registerAsClient,
       registerAsCompany,
       updateProfile,
+      saveCheckoutDetails,
       refreshProfile,
       setUserFromProfile,
       logout,
@@ -203,10 +239,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       token,
       login,
+      loginWithGoogle,
       completeTwoFactorLogin,
       registerAsClient,
       registerAsCompany,
       updateProfile,
+      saveCheckoutDetails,
       refreshProfile,
       setUserFromProfile,
       logout,

@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { PublicShell } from '../components/layout/PublicShell';
+import { GoogleSignInButton } from '../components/auth/GoogleSignInButton';
 import { useAuth } from '../context/AuthContext';
 import '../styles/pages/auth.css';
 
@@ -17,7 +18,7 @@ function resolveRedirect(
 export function LoginPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { login, completeTwoFactorLogin } = useAuth();
+  const { login, loginWithGoogle, completeTwoFactorLogin } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -64,6 +65,28 @@ export function LoginPage() {
     }
   }
 
+  async function handleGoogleCredential(idToken: string) {
+    setError('');
+    setIsSubmitting(true);
+    try {
+      const result = await loginWithGoogle(idToken, rememberMe);
+      if (typeof result === 'object' && result.requiresTwoFactor) {
+        setTempToken(result.tempToken);
+        setTwoFactorCode('');
+        return;
+      }
+      navigate(resolveRedirect(result, redirectParam));
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Google Sign-In failed. Please try again.',
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <PublicShell>
       <div className="auth-page">
@@ -76,6 +99,19 @@ export function LoginPage() {
           </p>
 
           {error && <div className="auth-error">{error}</div>}
+
+          {!tempToken && (
+            <>
+              <GoogleSignInButton
+                text="signin_with"
+                disabled={isSubmitting}
+                onCredential={handleGoogleCredential}
+              />
+              <div className="auth-divider">
+                <span>or</span>
+              </div>
+            </>
+          )}
 
           <form className="auth-form" onSubmit={handleSubmit}>
             {!tempToken ? (
@@ -125,7 +161,9 @@ export function LoginPage() {
                   maxLength={6}
                   value={twoFactorCode}
                   onChange={(e) =>
-                    setTwoFactorCode(e.target.value.replace(/\D/g, '').slice(0, 6))
+                    setTwoFactorCode(
+                      e.target.value.replace(/\D/g, '').slice(0, 6),
+                    )
                   }
                   placeholder="123456"
                   required

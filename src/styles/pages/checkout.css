@@ -220,3 +220,230 @@
     position: static;
   }
 }
+
+
+.checkout-qty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.checkout-qty label {
+  margin: 0;
+  font-size: 12px;
+}
+
+.checkout-qty input {
+  width: 72px;
+  padding: 8px 10px;
+}
+
+.checkout-card-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .checkout-card-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.address-map-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.address-map-picker__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.address-map-picker__label-row label {
+  margin-bottom: 0;
+}
+
+.address-map-picker__open-btn {
+  height: 36px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.address-map-picker__hint {
+  margin: 0 0 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.address-map-picker__suggestions {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  border: 1px solid var(--border-input);
+  border-radius: 12px;
+  background: var(--white-cards);
+  max-height: 180px;
+  overflow: auto;
+  position: relative;
+  z-index: 5;
+}
+
+.address-map-picker__suggestions button {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.address-map-picker__suggestions button:hover {
+  background: var(--bg-very-light);
+}
+
+.address-map-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.address-map-modal {
+  width: min(920px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  background: var(--white-cards);
+  border-radius: var(--radius-modal);
+  box-shadow: var(--soft-shadow);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.address-map-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.address-map-modal__header h2 {
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+}
+
+.address-map-modal__header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.address-map-modal__close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: var(--bg-very-light);
+  color: var(--text-main);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.address-map-modal__close:hover {
+  opacity: 0.85;
+}
+
+.address-map-modal__search {
+  margin-bottom: 12px;
+}
+
+.address-map-modal__map {
+  width: 100%;
+  height: min(52vh, 420px);
+  min-height: 280px;
+  border-radius: 14px;
+  border: 1px solid var(--border-input);
+  overflow: hidden;
+  background: #dbe4ee;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 0;
+}
+
+.address-map-modal__map .leaflet-container {
+  width: 100%;
+  height: 100%;
+  font: inherit;
+}
+
+.address-map-modal__map-loading {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.address-map-pin {
+  background: transparent;
+  border: none;
+}
+
+.address-map-pin__glyph {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin: 0 auto;
+  border-radius: 50% 50% 50% 0;
+  background: #6d5dfc;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.35);
+  transform: rotate(-45deg);
+}
+
+.address-map-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+@media (max-width: 640px) {
+  .address-map-modal {
+    padding: 14px;
+  }
+
+  .address-map-modal__map {
+    height: 45vh;
+  }
+
+  .address-map-modal__actions {
+    flex-direction: column-reverse;
+  }
+
+  .address-map-modal__actions .btn {
+    width: 100%;
+  }
+}

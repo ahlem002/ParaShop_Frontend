@@ -88,10 +88,11 @@ function matchesStatusFilter(
   if (filter === 'paid') return status === 'PAID';
   if (filter === 'failed') return status === 'PAYMENT_FAILED';
   if (filter === 'cancelled') return status === 'CANCELLED';
+  // In progress: paid but not delivered yet
   return (
+    status === 'PAID' ||
     status === 'PROCESSING' ||
-    status === 'SHIPPED' ||
-    status === 'DELIVERED'
+    status === 'SHIPPED'
   );
 }
 

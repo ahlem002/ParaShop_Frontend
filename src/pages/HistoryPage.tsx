@@ -45,7 +45,8 @@ function categoryFor(type: ActivityType): Exclude<FilterTab, 'all'> {
     type === 'CHECKOUT_STARTED' ||
     type === 'PAYMENT_SUCCEEDED' ||
     type === 'PAYMENT_FAILED' ||
-    type === 'ORDER_CANCELLED'
+    type === 'ORDER_CANCELLED' ||
+    type === 'ORDER_STATUS_UPDATED'
   ) {
     return 'orders';
   }
@@ -79,6 +80,8 @@ function iconFor(type: ActivityType) {
     case 'PAYMENT_FAILED':
     case 'ORDER_CANCELLED':
       return XCircle;
+    case 'ORDER_STATUS_UPDATED':
+      return Package;
     default:
       return History;
   }
@@ -97,6 +100,7 @@ function toneFor(type: ActivityType) {
       return 'red';
     case 'CHECKOUT_STARTED':
     case 'CART_ITEM_ADDED':
+    case 'ORDER_STATUS_UPDATED':
       return 'blue';
     case 'LOGIN':
     case 'PROFILE_UPDATED':

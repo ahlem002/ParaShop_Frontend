@@ -5,6 +5,7 @@ import type {
   LoginPayload,
   RegisterClientPayload,
   RegisterCompanyPayload,
+  SaveCheckoutDetailsPayload,
   UpdateProfilePayload,
 } from '../types/auth';
 
@@ -54,6 +55,15 @@ export function login(payload: LoginPayload) {
   >('/auth/login', {
     method: 'POST',
     body: JSON.stringify(payload),
+  });
+}
+
+export function loginWithGoogle(idToken: string) {
+  return apiFetch<
+    AuthResponse | { requiresTwoFactor: true; tempToken: string }
+  >('/auth/google', {
+    method: 'POST',
+    body: JSON.stringify({ idToken }),
   });
 }
 
@@ -136,5 +146,12 @@ export function updateProfile(payload: UpdateProfilePayload) {
   return authFetch<AuthUser>('/auth/profile', {
     method: 'PATCH',
     body: formData,
+  });
+}
+
+export function saveCheckoutDetails(payload: SaveCheckoutDetailsPayload) {
+  return authFetch<AuthUser>('/auth/checkout-details', {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
   });
 }

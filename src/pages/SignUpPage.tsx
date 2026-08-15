@@ -1,12 +1,13 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PublicShell } from '../components/layout/PublicShell';
+import { GoogleSignInButton } from '../components/auth/GoogleSignInButton';
 import { useAuth } from '../context/AuthContext';
 import '../styles/pages/auth.css';
 
 export function SignUpPage() {
   const navigate = useNavigate();
-  const { registerAsClient } = useAuth();
+  const { registerAsClient, loginWithGoogle } = useAuth();
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -47,6 +48,27 @@ export function SignUpPage() {
     }
   }
 
+  async function handleGoogleCredential(idToken: string) {
+    setError('');
+    setIsSubmitting(true);
+    try {
+      const result = await loginWithGoogle(idToken, false);
+      if (typeof result === 'object' && result.requiresTwoFactor) {
+        navigate('/login');
+        return;
+      }
+      navigate(result);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Google Sign-Up failed. Please try again.',
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <PublicShell>
       <div className="auth-page">
@@ -55,6 +77,15 @@ export function SignUpPage() {
           <p>Join ParaShop+ as a client or admin</p>
 
           {error && <div className="auth-error">{error}</div>}
+
+          <GoogleSignInButton
+            text="signup_with"
+            disabled={isSubmitting}
+            onCredential={handleGoogleCredential}
+          />
+          <div className="auth-divider">
+            <span>or</span>
+          </div>
 
           <form className="auth-form" onSubmit={handleClientSubmit}>
             <div className="form-row">
@@ -149,7 +180,10 @@ export function SignUpPage() {
                   id="phoneNumber"
                   value={clientForm.phoneNumber}
                   onChange={(e) =>
-                    setClientForm({ ...clientForm, phoneNumber: e.target.value })
+                    setClientForm({
+                      ...clientForm,
+                      phoneNumber: e.target.value,
+                    })
                   }
                 />
               </div>

@@ -6,6 +6,7 @@ import { CartProvider } from './context/CartContext';
 import { FavoritesProvider } from './context/FavoritesContext';
 import { ConfirmProvider } from './context/ConfirmContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { AiChatWidget } from './components/ai/AiChatWidget';
 import { AdminLayout } from './components/admin/AdminLayout';
 import { CompanyLayout } from './components/company/CompanyLayout';
 import { HomePage } from './pages/HomePage';
@@ -64,6 +65,7 @@ function App() {
             <CartProvider>
               <FavoritesProvider>
               <BrowserRouter>
+              <AiChatWidget />
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/products" element={<ProductsPage />} />

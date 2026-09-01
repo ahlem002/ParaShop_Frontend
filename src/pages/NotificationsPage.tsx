@@ -65,6 +65,7 @@ function iconForType(type: NotificationType) {
       return Package;
     case 'ORDER_UPDATED':
     case 'DELIVERY_ASSIGNED':
+    case 'DRIVER_ACTIVE':
       return Truck;
     case 'NEW_ORDER':
     case 'DRIVER_RATED':
@@ -91,6 +92,8 @@ function toneForType(type: NotificationType) {
     case 'ORDER_UPDATED':
     case 'DELIVERY_ASSIGNED':
       return 'blue';
+    case 'DRIVER_ACTIVE':
+      return 'green';
     case 'NEW_ORDER':
     case 'DRIVER_RATED':
       return 'green';
@@ -118,7 +121,8 @@ function matchesTab(item: AppNotification, tab: NotificationFilterTab) {
       item.type === 'ORDER_UPDATED' ||
       item.type === 'NEW_ORDER' ||
       item.type === 'DELIVERY_ASSIGNED' ||
-      item.type === 'DRIVER_RATED'
+      item.type === 'DRIVER_RATED' ||
+      item.type === 'DRIVER_ACTIVE'
     );
   }
   return false;

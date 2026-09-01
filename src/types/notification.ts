@@ -9,7 +9,8 @@ export type NotificationType =
   | 'ORDER_UPDATED'
   | 'NEW_ORDER'
   | 'DELIVERY_ASSIGNED'
-  | 'DRIVER_RATED';
+  | 'DRIVER_RATED'
+  | 'DRIVER_ACTIVE';
 
 export interface AppNotification {
   notificationId: string;
